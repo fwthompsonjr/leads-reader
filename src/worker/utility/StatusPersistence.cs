@@ -3,7 +3,7 @@ using legallead.jdbc.implementations;
 using legallead.jdbc.interfaces;
 using legallead.records.search.Interfaces;
 
-namespace legallead.reader.component.utility
+namespace legallead.reader.service.utility
 {
     public class StatusPersistence : IStatusPersistence
     {

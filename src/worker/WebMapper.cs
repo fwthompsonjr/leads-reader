@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 using legallead.models.Search;
 using legallead.permissions.api.Model;
-using legallead.reader.component.utility;
+using legallead.reader.service.utility;
 using legallead.records.search.Classes;
 using legallead.records.search.Models;
 using Newtonsoft.Json;
 using System.Xml;
 
-namespace legallead.reader.component
+namespace legallead.reader.service
 {
     using PropXml = records.search.Properties.Resources;
     public static class WebMapper

@@ -6,11 +6,11 @@ using legallead.logging;
 using legallead.logging.helpers;
 using legallead.logging.implementations;
 using legallead.logging.interfaces;
-using legallead.reader.component.models;
-using legallead.reader.component.services;
+using legallead.reader.service.models;
+using legallead.reader.service.services;
 using System.Diagnostics.CodeAnalysis;
 
-namespace legallead.reader.component.utility
+namespace legallead.reader.service.utility
 {
     public static class ServiceExtensions
     {
@@ -85,19 +85,21 @@ namespace legallead.reader.component.utility
 
             services.AddSingleton(s =>
             {
+                var config = s.GetRequiredService<IConfiguration>();
                 var logger = s.GetRequiredService<ILoggingRepository>();
                 var search = s.GetRequiredService<ISearchQueueRepository>();
                 var component = s.GetRequiredService<IBgComponentRepository>();
                 var settings = s.GetRequiredService<IBackgroundServiceSettings>();
                 var excel = s.GetRequiredService<IExcelGenerator>();
-                return new SearchGenerationService(logger, search, component, settings, excel);
+                var mn = new MainWindowService(config);
+                return new SearchGenerationService(logger, search, component, settings, excel, mn);
             });
             services.AddSingleton<ISearchGenerationService>(p => p.GetRequiredService<SearchGenerationService>());
             services.AddSingleton(s => { return s; });
         }
 
         [ExcludeFromCodeCoverage]
-        private static string GetConfigOrDefault(IConfiguration? configuration, string key, string backup)
+        internal static string GetConfigOrDefault(IConfiguration? configuration, string key, string backup)
         {
             try
             {

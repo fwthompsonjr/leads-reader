@@ -1,7 +1,7 @@
 using component;
-using legallead.reader.component.utility;
+using legallead.reader.service.utility;
 
-namespace legallead.reader.component
+namespace legallead.reader.service
 {
     internal static class Program
     {

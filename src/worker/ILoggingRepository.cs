@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace legallead.reader.component
+namespace legallead.reader.service
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "VSTHRD200:Use \"Async\" suffix for async methods",
         Justification = "Following convention from remote package.")]

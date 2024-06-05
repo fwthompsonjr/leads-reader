@@ -2,7 +2,7 @@
 using legallead.records.search.Models;
 using OfficeOpenXml;
 
-namespace legallead.reader.component
+namespace legallead.reader.service
 {
     internal interface IExcelGenerator
     {

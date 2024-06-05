@@ -5,7 +5,7 @@ using legallead.jdbc.interfaces;
 using legallead.records.search.Interfaces;
 using legallead.records.search.Models;
 
-namespace legallead.reader.component.utility
+namespace legallead.reader.service.utility
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage",
         "VSTHRD002:Avoid problematic synchronous waits",

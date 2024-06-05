@@ -1,4 +1,4 @@
-﻿namespace legallead.reader.component.models
+﻿namespace legallead.reader.service.models
 {
     public class BackgroundServiceSettings : IBackgroundServiceSettings
     {

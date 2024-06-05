@@ -1,7 +1,7 @@
 ﻿using legallead.logging.interfaces;
 using System.Runtime.CompilerServices;
 
-namespace legallead.reader.component.services
+namespace legallead.reader.service.services
 {
     public class LoggingRepository : ILoggingRepository
     {

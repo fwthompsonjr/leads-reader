@@ -1,5 +1,5 @@
 ﻿using legallead.jdbc.interfaces;
-using legallead.reader.component;
+using legallead.reader.service;
 using Newtonsoft.Json;
 using System.Diagnostics;
 
@@ -142,8 +142,6 @@ namespace component
                 _componentName = componentName;
                 _typeName = typeName;
             }
-
-            private const string ns = "legallead.reader.component";
 
             /// <summary>
             /// This method writes an information record to the log.

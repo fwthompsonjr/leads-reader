@@ -4,7 +4,7 @@ using legallead.records.search.Classes;
 using legallead.records.search.Models;
 using OfficeOpenXml;
 
-namespace legallead.reader.component.services
+namespace legallead.reader.service.services
 {
     internal class ExcelGenerator : IExcelGenerator
     {

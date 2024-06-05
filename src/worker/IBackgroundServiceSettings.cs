@@ -1,4 +1,4 @@
-﻿namespace legallead.reader.component
+﻿namespace legallead.reader.service
 {
     public interface IBackgroundServiceSettings
     {
