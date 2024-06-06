@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System.IO;
 using System.Reflection;
 
 namespace legallead.reader.service.services
@@ -11,7 +10,7 @@ namespace legallead.reader.service.services
             lock (sync)
             {
                 Collection = GetIndexes();
-                Watch(); 
+                Watch();
             }
         }
         public string SearchLocation => ConfigurationFolder;
@@ -56,7 +55,7 @@ namespace legallead.reader.service.services
                     items.ForEach(i =>
                     {
                         var ismapped = Guid.TryParse(i, out var _);
-                        if (ismapped && ! collection.Contains(i, StringComparer.OrdinalIgnoreCase)) collection.Add(i);
+                        if (ismapped && !collection.Contains(i, StringComparer.OrdinalIgnoreCase)) collection.Add(i);
                     });
                 }
             });
@@ -97,7 +96,7 @@ namespace legallead.reader.service.services
                 var converted = JsonConvert.DeserializeObject<T>(json);
                 return converted;
             }
-            catch 
+            catch
             {
                 return default;
             }
