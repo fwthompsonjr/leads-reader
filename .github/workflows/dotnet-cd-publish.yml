@@ -1,0 +1,33 @@
+name: "CD : Publish and Deploy"
+
+on:
+  pull_request:
+    types: [labeled]
+    branches:
+      - "releases"
+
+
+env:
+  SOLUTION_NAME: ${{ github.workspace }}\src\legallead.reader.sln
+  PROJECT_NAME: ${{ github.workspace }}\src\worker\legallead.reader.service.csproj
+  PUBLISH_DIR: ${{ github.workspace }}\publish
+  NET_VERSION: "8.0.x"
+  NUGET_CERT_REVOCATION_MODE: offline
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: dotnet restore ${{ env.SOLUTION_NAME }}
+        id: dotnet-restore
+        name: DotNet Restore
+
+      - run: dotnet publish ${{ env.SOLUTION_NAME }} --no-restore -c Release -o ${{ env.PUBLISH_DIR }}
+        id: dotnet-publish
+        name: DotNet Publish
+        
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reader
+          path: ${{ github.workspace }}/publish/**
