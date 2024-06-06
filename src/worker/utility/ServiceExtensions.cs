@@ -82,6 +82,8 @@ namespace legallead.reader.service.utility
                 return new LoggingRepository(lg);
             });
 
+            services.AddSingleton<IIndexReader, IndexReader>();
+            services.AddSingleton<IQueueFilter, QueueFilter>();
 
             services.AddSingleton(s =>
             {
@@ -92,7 +94,8 @@ namespace legallead.reader.service.utility
                 var settings = s.GetRequiredService<IBackgroundServiceSettings>();
                 var excel = s.GetRequiredService<IExcelGenerator>();
                 var mn = new MainWindowService(config);
-                return new SearchGenerationService(logger, search, component, settings, excel, mn);
+                var qu = s.GetRequiredService<IQueueFilter>();
+                return new SearchGenerationService(logger, search, component, settings, excel, mn, qu);
             });
             services.AddSingleton<ISearchGenerationService>(p => p.GetRequiredService<SearchGenerationService>());
             services.AddSingleton(s => { return s; });

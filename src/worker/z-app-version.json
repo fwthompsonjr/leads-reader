@@ -1,0 +1,12 @@
+[
+  {
+    "id": "3.2.1",
+    "description": "Added process to filter records by context user.",
+    "date": "2024-06-05"
+  },
+  {
+    "id": "3.2.0",
+    "description": "Initial Worker Release With Base Commands",
+    "date": "2024-06-05"
+  }
+]

@@ -19,15 +19,19 @@ namespace component
         private const string clsname = "search.generation.service";
 
         private readonly IExcelGenerator generator;
+        private readonly IQueueFilter queueFilterSvc;
+
         public SearchGenerationService(
             ILoggingRepository? logger,
             ISearchQueueRepository? repo,
             IBgComponentRepository? component,
             IBackgroundServiceSettings? settings,
             IExcelGenerator excel,
-            MainWindowService main) : base(logger, repo, component, settings)
+            MainWindowService main,
+            IQueueFilter filter) : base(logger, repo, component, settings)
         {
             generator = excel;
+            queueFilterSvc = filter;
             if (!main.IsMainVisible)
             {
                 Debug.WriteLine("Main window is hidden.");
@@ -69,7 +73,9 @@ namespace component
                 lock (_lock)
                 {
                     IsWorking = true;
-                    var queue = GetQueue().Result;
+                    var queue = GetQueue().GetAwaiter().GetResult();
+                    if (queue == null) return;
+                    queue = queueFilterSvc.Apply(queue);
                     if (queue.Count == 0) { return; }
                     using var hideprocess = new HiddenWindowService();
                     var message = $"Found ( {queue.Count} ) records to process.";
