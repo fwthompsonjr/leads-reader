@@ -1,0 +1,9 @@
+[Unit]
+Description=legal lead queue reader
+
+[Service]
+Type=notify
+ExecStart=/home/frank_thompson_jr/legallead.reader.component
+
+[Install]
+WantedBy=multi-user.target
