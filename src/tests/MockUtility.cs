@@ -27,14 +27,15 @@ namespace legallead.reader.service.tests
             var mQueueFilter = new Mock<IQueueFilter>();
             var mWorkLogger = new Mock<ILogger<Worker>>();
             var mSearchGenerationService = new Mock<ISearchGenerationService>();
+            configuration ??= GetConfiguration();
             var setting = new BackgroundServiceSettings
             {
-                Enabled = configuration?.GetValue<bool>("BackgroundServices:Enabled") ?? true,
-                Delay = configuration?.GetValue<int>("BackgroundServices:Delay") ?? 45,
-                Interval = configuration?.GetValue<int>("BackgroundServices:Interval") ?? 10
+                Enabled = configuration.GetValue<bool>("BackgroundServices:Enabled"),
+                Delay = configuration.GetValue<int>("BackgroundServices:Delay"),
+                Interval = configuration.GetValue<int>("BackgroundServices:Interval")
             };
             services.AddSingleton<IBackgroundServiceSettings>(x => setting);
-            configuration ??= GetConfiguration();
+            
             services.AddSingleton(m => configuration);
             services.AddSingleton(m => mLoggingRepository);
             services.AddSingleton(m => mDapperCommand);
