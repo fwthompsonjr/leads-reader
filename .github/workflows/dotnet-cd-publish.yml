@@ -44,32 +44,11 @@ jobs:
         id: dotnet-restore
         name: DotNet Restore
 
-      - run: dotnet build ${{ env.PROJECT_NAME }} --no-restore -c Release
-        id: dotnet-build
+      - run: dotnet publish ${{ env.PROJECT_NAME }} --no-restore -c Release -o ${{ env.PUBLISH_DIR }}
+        id: dotnet-publish
         name: DotNet Publish
-
-      - name: Build Zip File
-        id: buildComponent
-        shell: pwsh
-        run: |
-            & ./util/x-pipeline-installer-publish.ps1 -version "${{ env.BUILD_VERSION }}"
-
-
-
-      - name: Create release
-        if: github.event_name == 'pull_request'
-        shell: bash
-        env:
-          GITHUB_TOKEN: ${{ github.TOKEN }}
-        run: |
-            gh release create ${{ env.BUILD_VERSION }} -F ./util/README.md
-            
-            
-
-      - name: Package windows x64
-        if: github.event_name == 'pull_request'
-        shell: bash
-        env:
-          GITHUB_TOKEN: ${{ github.TOKEN }}
-        run: |
-          gh release upload ${{ env.BUILD_VERSION }} ${{ env.ZIPFILE_NAME }}
+        
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reader
+          path: ${{ github.workspace }}/publish/**
