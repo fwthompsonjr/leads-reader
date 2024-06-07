@@ -10,6 +10,7 @@ on:
 env:
   SOLUTION_NAME: ${{ github.workspace }}\src\legallead.reader.sln
   PROJECT_NAME: ${{ github.workspace }}\src\worker\legallead.reader.service.csproj
+  PROJECT_TITLE: "legallead.reader.service"
   PUBLISH_DIR: ${{ github.workspace }}\publish
   NET_VERSION: "8.0.x"
   NUGET_CERT_REVOCATION_MODE: offline
@@ -19,15 +20,56 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Set Build Version
+        shell: bash
+        run: |
+            echo "BUILD_VERSION=${{format('{0}.{1}', vars.LEGALLEAD_READER_PREFIX, github.run_number)}}" >> $GITHUB_ENV
+
+      - name: Set ZipFile Name
+        shell: bash
+        run: |
+            echo "ZIPFILE_NAME=${{format('{0}-{1}.zip', env.PROJECT_TITLE, env.BUILD_VERSION )}}" >> $GITHUB_ENV
+
+      - name: Calculate Release Title
+        shell: pwsh
+        run: |
+            & ./util/x-pipeline-reader-release-title.ps1
+
+      - name: Update README
+        shell: pwsh
+        run: |
+            & ./util/x-pipeline-update-release-notes.ps1 -version "${{ env.BUILD_VERSION }}"
+
       - run: dotnet restore ${{ env.SOLUTION_NAME }}
         id: dotnet-restore
         name: DotNet Restore
 
-      - run: dotnet publish ${{ env.SOLUTION_NAME }} --no-restore -c Release -o ${{ env.PUBLISH_DIR }}
-        id: dotnet-publish
+      - run: dotnet build ${{ env.SOLUTION_NAME }} --no-restore -c Release -o ${{ env.PUBLISH_DIR }}
+        id: dotnet-build
         name: DotNet Publish
-        
-      - uses: actions/upload-artifact@v4
-        with:
-          name: reader
-          path: ${{ github.workspace }}/publish/**
+
+      - name: Build Zip File
+        id: buildComponent
+        shell: pwsh
+        run: |
+            & ./util/x-pipeline-installer-publish.ps1 -version "${{ env.BUILD_VERSION }}"
+
+
+
+      - name: Create release
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.TOKEN }}
+        run: |
+            gh release create ${{ env.BUILD_VERSION }} -F ./util/README.md
+            
+            
+
+      - name: Package windows x64
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.TOKEN }}
+        run: |
+          gh release upload ${{ env.BUILD_VERSION }} ${{ env.ZIPFILE_NAME }}
