@@ -44,7 +44,7 @@ jobs:
         id: dotnet-restore
         name: DotNet Restore
 
-      - run: dotnet build ${{ env.SOLUTION_NAME }} --no-restore -c Release -o ${{ env.PUBLISH_DIR }}
+      - run: dotnet build ${{ env.PROJECT_NAME }} --no-restore -c Release
         id: dotnet-build
         name: DotNet Publish
 

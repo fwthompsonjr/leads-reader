@@ -1,10 +1,10 @@
 ﻿using component;
-using legallead.jdbc.interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace legallead.reader.service.tests.timed
 {
-    public class SearchGenerationServiceTest
+    public class WorkerTests
     {
         [Fact]
         public void ServiceCanBeCreated()
@@ -12,14 +12,9 @@ namespace legallead.reader.service.tests.timed
             var problems = Record.Exception(() =>
             {
                 var provider = new MqSvc().Provider;
-                var logger = provider.GetRequiredService<ILoggingRepository>();
-                var search = provider.GetRequiredService<ISearchQueueRepository>();
-                var bck = provider.GetRequiredService<IBgComponentRepository>();
-                var settings = provider.GetRequiredService<IBackgroundServiceSettings>();
-                var exl = provider.GetRequiredService<IExcelGenerator>();
-                var mn = provider.GetRequiredService<IMainWindowService>();
-                var q = provider.GetRequiredService<IQueueFilter>();
-                var sut = new SearchGenerationService(logger, search, bck, settings, exl, mn, q);
+                var logger = provider.GetRequiredService<ILogger<Worker>>();
+                var search = provider.GetRequiredService<ISearchGenerationService>();
+                var sut = new Worker(logger, search);
                 Assert.NotNull(sut);
             });
             Assert.Null(problems);

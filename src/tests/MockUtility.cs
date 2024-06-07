@@ -1,8 +1,10 @@
-﻿using legallead.jdbc.interfaces;
+﻿using component;
+using legallead.jdbc.interfaces;
 using legallead.logging.interfaces;
 using legallead.reader.service.models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace legallead.reader.service.tests
@@ -23,6 +25,8 @@ namespace legallead.reader.service.tests
             var mMainWindowService = new Mock<IMainWindowService>();
             var mIndexReader = new Mock<IIndexReader>();
             var mQueueFilter = new Mock<IQueueFilter>();
+            var mWorkLogger = new Mock<ILogger<Worker>>();
+            var mSearchGenerationService = new Mock<ISearchGenerationService>();
             var setting = new BackgroundServiceSettings
             {
                 Enabled = configuration?.GetValue<bool>("BackgroundServices:Enabled") ?? true,
@@ -44,6 +48,8 @@ namespace legallead.reader.service.tests
             services.AddSingleton(m => mMainWindowService);
             services.AddSingleton(m => mIndexReader);
             services.AddSingleton(m => mQueueFilter);
+            services.AddSingleton(m => mWorkLogger);
+            services.AddSingleton(m => mSearchGenerationService);
 
             services.AddSingleton(m => mLoggingRepository.Object);
             services.AddSingleton(m => mDapperCommand.Object);
@@ -57,6 +63,8 @@ namespace legallead.reader.service.tests
             services.AddSingleton(m => mMainWindowService.Object);
             services.AddSingleton(m => mIndexReader.Object);
             services.AddSingleton(m => mQueueFilter.Object);
+            services.AddSingleton(m => mWorkLogger.Object);
+            services.AddSingleton(m => mSearchGenerationService.Object);
 
         }
 
