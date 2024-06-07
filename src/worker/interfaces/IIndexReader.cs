@@ -1,6 +1,6 @@
 ﻿namespace legallead.reader.service
 {
-    internal interface IIndexReader
+    public interface IIndexReader
     {
         string SearchLocation { get; }
         IEnumerable<string> Indexes { get; }

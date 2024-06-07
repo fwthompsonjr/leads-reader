@@ -27,7 +27,7 @@ namespace component
             IBgComponentRepository? component,
             IBackgroundServiceSettings? settings,
             IExcelGenerator excel,
-            MainWindowService main,
+            IMainWindowService main,
             IQueueFilter filter) : base(logger, repo, component, settings)
         {
             generator = excel;

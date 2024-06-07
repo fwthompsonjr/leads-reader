@@ -2,7 +2,7 @@
 
 namespace legallead.reader.service
 {
-    internal interface IQueueFilter
+    public interface IQueueFilter
     {
         bool IsEnabled { get; }
 
