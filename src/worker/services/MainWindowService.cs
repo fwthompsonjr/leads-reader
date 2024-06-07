@@ -4,7 +4,7 @@ using System.Timers;
 
 namespace legallead.reader.service.services
 {
-    internal partial class MainWindowService
+    internal partial class MainWindowService : IMainWindowService
     {
         [LibraryImport("User32")]
         private static partial int ShowWindow(int hwnd, int nCmdShow);
