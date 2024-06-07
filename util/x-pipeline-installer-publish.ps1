@@ -7,7 +7,7 @@ $startedAt = [datetime]::UtcNow
 $workfolder = [System.IO.Path]::GetDirectoryName( $MyInvocation.MyCommand.Path );
 $rootfolder = [System.IO.Path]::GetDirectoryName( $workfolder );
 # _\src\worker\bin\Release\net8.0
-$binfolder = [System.IO.Path]::Combine( $workfolder, "src/worker/bin/release/net8.0" );
+$binfolder = [System.IO.Path]::Combine( $rootfolder, "src/worker/bin/release/net8.0" );
 $project = "legallead.reader.service"
 $zipFileName = [string]::Concat($project, "-", $version, ".zip");
 $zipFileName = [System.IO.Path]::Combine( $rootfolder, $zipFileName );
