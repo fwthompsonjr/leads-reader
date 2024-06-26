@@ -1,5 +1,10 @@
 [
   {
+    "id": "3.2.2",
+    "description": "Adding process to expose queue status.",
+    "date": "2024-06-05"
+  },
+  {
     "id": "3.2.1",
     "description": "Added process to filter records by context user.",
     "date": "2024-06-05"
