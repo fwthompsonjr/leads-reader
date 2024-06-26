@@ -1,6 +1,7 @@
 ﻿using component;
 using legallead.jdbc.interfaces;
 using legallead.logging.interfaces;
+using legallead.reader.service.interfaces;
 using legallead.reader.service.models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,7 @@ namespace legallead.reader.service.tests
             var mIndexReader = new Mock<IIndexReader>();
             var mQueueFilter = new Mock<IQueueFilter>();
             var mWorkLogger = new Mock<ILogger<Worker>>();
+            var mWorkingSvc = new Mock<IWorkingIndicator>();
             var mSearchGenerationService = new Mock<ISearchGenerationService>();
             configuration ??= GetConfiguration();
             var setting = new BackgroundServiceSettings
@@ -66,6 +68,7 @@ namespace legallead.reader.service.tests
             services.AddSingleton(m => mQueueFilter.Object);
             services.AddSingleton(m => mWorkLogger.Object);
             services.AddSingleton(m => mSearchGenerationService.Object);
+            services.AddSingleton(m => mWorkingSvc.Object);
 
         }
 

@@ -6,6 +6,7 @@ using legallead.logging;
 using legallead.logging.helpers;
 using legallead.logging.implementations;
 using legallead.logging.interfaces;
+using legallead.reader.service.interfaces;
 using legallead.reader.service.models;
 using legallead.reader.service.services;
 using System.Diagnostics.CodeAnalysis;
@@ -84,6 +85,7 @@ namespace legallead.reader.service.utility
 
             services.AddSingleton<IIndexReader, IndexReader>();
             services.AddSingleton<IQueueFilter, QueueFilter>();
+            services.AddSingleton<IWorkingIndicator, WorkingIndicator>();
 
             services.AddSingleton(s =>
             {
@@ -95,7 +97,8 @@ namespace legallead.reader.service.utility
                 var excel = s.GetRequiredService<IExcelGenerator>();
                 var mn = new MainWindowService(config);
                 var qu = s.GetRequiredService<IQueueFilter>();
-                return new SearchGenerationService(logger, search, component, settings, excel, mn, qu);
+                var indc = s.GetRequiredService<IWorkingIndicator>();
+                return new SearchGenerationService(logger, search, component, settings, excel, mn, qu, indc);
             });
             services.AddSingleton<ISearchGenerationService>(p => p.GetRequiredService<SearchGenerationService>());
             services.AddSingleton(s => { return s; });

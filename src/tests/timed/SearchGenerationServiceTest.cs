@@ -1,5 +1,6 @@
 ﻿using component;
 using legallead.jdbc.interfaces;
+using legallead.reader.service.interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace legallead.reader.service.tests.timed
@@ -19,7 +20,8 @@ namespace legallead.reader.service.tests.timed
                 var exl = provider.GetRequiredService<IExcelGenerator>();
                 var mn = provider.GetRequiredService<IMainWindowService>();
                 var q = provider.GetRequiredService<IQueueFilter>();
-                var sut = new SearchGenerationService(logger, search, bck, settings, exl, mn, q);
+                var indc = provider.GetRequiredService<IWorkingIndicator>();
+                var sut = new SearchGenerationService(logger, search, bck, settings, exl, mn, q, indc);
                 Assert.NotNull(sut);
             });
             Assert.Null(problems);

@@ -10,11 +10,17 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<Description>Windows process to perform local user based searches for legal leads components.</Description>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Content Remove="_sys\process_state.json" />
+	</ItemGroup>
 	
 	
 	<ItemGroup>
 		<None Include="..\shared\geckodriver.exe" Link="geckodriver.exe">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="_sys\process_state.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="README.md">
 			<Pack>True</Pack>
@@ -22,6 +28,9 @@
 		</None>
 		<None Update="_configuration\account-index.json.txt">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="_configuration\applicationuser_00000.json.txt">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 	
