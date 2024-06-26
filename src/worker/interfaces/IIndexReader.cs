@@ -4,5 +4,7 @@
     {
         string SearchLocation { get; }
         IEnumerable<string> Indexes { get; }
+
+        void Rebuild();
     }
 }
