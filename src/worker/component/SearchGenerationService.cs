@@ -2,6 +2,7 @@
 using legallead.jdbc.interfaces;
 using legallead.permissions.api.Model;
 using legallead.reader.service;
+using legallead.reader.service.interfaces;
 using legallead.reader.service.services;
 using legallead.records.search.Classes;
 using legallead.records.search.Models;
@@ -20,6 +21,7 @@ namespace component
 
         private readonly IExcelGenerator generator;
         private readonly IQueueFilter queueFilterSvc;
+        private readonly IWorkingIndicator indicatorSvc;
 
         public SearchGenerationService(
             ILoggingRepository? logger,
@@ -28,10 +30,12 @@ namespace component
             IBackgroundServiceSettings? settings,
             IExcelGenerator excel,
             IMainWindowService main,
-            IQueueFilter filter) : base(logger, repo, component, settings)
+            IQueueFilter filter,
+            IWorkingIndicator indicator) : base(logger, repo, component, settings)
         {
             generator = excel;
             queueFilterSvc = filter;
+            indicatorSvc = indicator;
             if (!main.IsMainVisible)
             {
                 Debug.WriteLine("Main window is hidden.");
@@ -73,8 +77,9 @@ namespace component
                 lock (_lock)
                 {
                     IsWorking = true;
+                    indicatorSvc.Update(IsWorking);
                     var queue = GetQueue().GetAwaiter().GetResult();
-                    if (queue == null) return;
+                    if (queue == null || queue.Count == 0) return;
                     queue = queueFilterSvc.Apply(queue);
                     if (queue.Count == 0) { return; }
                     using var hideprocess = new HiddenWindowService();
@@ -91,6 +96,7 @@ namespace component
             finally
             {
                 IsWorking = false;
+                indicatorSvc.Update(IsWorking);
             }
         }
 

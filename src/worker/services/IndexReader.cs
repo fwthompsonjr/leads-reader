@@ -14,6 +14,11 @@ namespace legallead.reader.service.services
             }
         }
         public string SearchLocation => ConfigurationFolder;
+        public void Rebuild()
+        {
+            var arg = new FileSystemEventArgs(WatcherChangeTypes.Changed, ConfigurationFolder, null);
+            OnChanged(new(), arg);
+        }
         public IEnumerable<string> Indexes => Collection;
         private IEnumerable<string> Collection { get; set; }
 

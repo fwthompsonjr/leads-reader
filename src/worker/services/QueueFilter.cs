@@ -13,6 +13,7 @@ namespace legallead.reader.service.services
                 var searchPath = _indexReader.SearchLocation;
                 if (string.IsNullOrEmpty(searchPath) ||
                     !Directory.Exists(searchPath)) return false;
+                _indexReader.Rebuild();
                 var searches = _indexReader.Indexes.Count();
                 return searches > 0;
             }
