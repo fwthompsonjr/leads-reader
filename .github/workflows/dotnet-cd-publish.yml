@@ -12,6 +12,7 @@ env:
   PROJECT_NAME: ${{ github.workspace }}\src\worker\legallead.reader.service.csproj
   PROJECT_TITLE: "legallead.reader.service"
   PUBLISH_DIR: ${{ github.workspace }}\publish
+  ASSET_FILE: ${{ github.workspace }}\reader.zip
   NET_VERSION: "8.0.x"
   NUGET_CERT_REVOCATION_MODE: offline
 
@@ -47,8 +48,35 @@ jobs:
       - run: dotnet publish ${{ env.PROJECT_NAME }} --no-restore -c Release -o ${{ env.PUBLISH_DIR }}
         id: dotnet-publish
         name: DotNet Publish
-        
-      - uses: actions/upload-artifact@v4
+
+      - name: Zip Content
+        shell: pwsh
+        run: |
+            $sourcePath = [string]::Concat($Env:PUBLISH_DIR, "\*")
+            $destination = $Env:ASSET_FILE
+            Compress-Archive -Path $sourcePath -DestinationPath $destination
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITUB_TOKEN }}
         with:
-          name: reader
-          path: ${{ github.workspace }}/publish/**
+          tag_name: ${{format('v{0}', env.BUILD_VERSION)}}
+          release_name: ${{format('Release - {0}', env.BUILD_VERSION)}}
+          draft: false
+          prerelease: false
+          body: |
+            Changes in this release
+            - Update application
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        id: upload_release_asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.ASSET_FILE }}
+          asset_name: ${{ env.ZIPFILE_NAME }}
+          asset_content_type: application/zip
