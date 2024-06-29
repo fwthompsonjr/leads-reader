@@ -19,7 +19,7 @@ env:
 jobs:
   build:
     if: contains(github.event.pull_request.labels.*.name, 'approved')
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Set Build Version
