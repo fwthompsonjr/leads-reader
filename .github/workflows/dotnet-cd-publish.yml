@@ -60,7 +60,7 @@ jobs:
         uses: actions/create-release@v1
         id: create_release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{format('v{0}', env.BUILD_VERSION)}}
           release_name: ${{format('Release - {0}', env.BUILD_VERSION)}}
@@ -74,7 +74,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         id: upload_release_asset
         env:
-          GITHUB_TOKEN: ${{ secrets.GITUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ env.ASSET_FILE }}
