@@ -1,5 +1,6 @@
 ﻿using legallead.jdbc.entities;
 using legallead.jdbc.interfaces;
+using legallead.models.Search;
 using legallead.permissions.api.Model;
 using legallead.reader.service;
 using legallead.reader.service.interfaces;
@@ -126,6 +127,13 @@ namespace component
                     _ = _queueDb.Complete(uniqueId);
                     return;
                 }
+#if DEBUG
+                var parameter = WebMapper.MapFrom<UserSearchRequest, SearchRequest>(bo);
+                if (parameter != null && parameter.WebId == 30)
+                {
+                    Debugger.Break();
+                }
+#endif
                 interaction.UniqueId = uniqueId;
                 PostStatus(uniqueId, 1, 1);
                 PostStatus(uniqueId, 2, 0);

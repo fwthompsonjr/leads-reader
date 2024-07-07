@@ -83,15 +83,19 @@ namespace legallead.reader.service.utility
                 var lg = p.GetRequiredService<ILoggingService>();
                 return new LoggingRepository(lg);
             });
-
+            services.AddSingleton(s => {
+                var fallback = new OperationSetting();
+                var content = Properties.Resources.operation_mode;
+                if (string.IsNullOrEmpty(content)) return fallback;
+                var mapped = TryJsConvert<OperationSetting>(content) ?? fallback;
+                return mapped;
+            });
             services.AddSingleton<IIndexReader, IndexReader>();
             services.AddSingleton<IQueueFilter>(s =>
             {
                 var reader = s.GetRequiredService<IIndexReader>();
                 var filter = new QueueFilter(reader);
-                var content = Properties.Resources.operation_mode;
-                if (string.IsNullOrEmpty(content)) return filter;
-                var mapped = TryJsConvert<OperationSetting>(content);
+                var mapped = s.GetRequiredService<OperationSetting>();
                 if (mapped == null || !mapped.IsServer) return filter;
                 return new QueueNonFilter();
             });

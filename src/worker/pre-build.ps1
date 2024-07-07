@@ -11,9 +11,11 @@ $operationsFile = [System.IO.Path]::Combine( $workfolder, "_configuration/operat
 $ops = @(
     @{ 
         "mode" = "single" 
+        "headless" = $true
     },
     @{ 
-        "mode" = "service" 
+        "mode" = "service"
+        "headless" = $true 
     }
 );
 
@@ -42,6 +44,9 @@ function updateOperationModel() {
     }
     $id = 1;
     $selection = $ops[$id];
+    if ($null -ne $config.headless) {
+        $selection.headless = $config.headless;
+    }
     setOperationModel -path $operationsFile -configuration $selection
 }
 function getVersionNumber {
