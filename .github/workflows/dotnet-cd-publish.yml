@@ -32,6 +32,11 @@ jobs:
         run: |
             echo "ZIPFILE_NAME=${{format('{0}-{1}.zip', env.PROJECT_TITLE, env.BUILD_VERSION )}}" >> $GITHUB_ENV
 
+      - name: Configure Component
+        shell: pwsh
+        run: |
+            & ./configure-component.ps1 -applyUpdate $true
+
       - name: Calculate Release Title
         shell: pwsh
         run: |
@@ -95,6 +100,11 @@ jobs:
         run: |
             echo "ZIPFILE_NAME=${{format('{0}-{1}.zip', env.PROJECT_TITLE, env.BUILD_VERSION )}}" >> $GITHUB_ENV
 
+      - name: Configure Component
+        shell: pwsh
+        run: |
+            & ./configure-component.ps1 -applyUpdate $true
+
       - name: Calculate Release Title
         shell: pwsh
         run: |
@@ -116,4 +126,46 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: reader
+          path: ${{ github.workspace }}/publish/**
+  build_artifact_server:
+    runs-on: windows-latest
+    if: contains(github.event.pull_request.labels.*.name, 'approved')
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set Build Version
+        shell: bash
+        run: |
+            echo "BUILD_VERSION=${{format('{0}.{1}', vars.LEGALLEAD_READER_PREFIX, github.run_number)}}" >> $GITHUB_ENV
+
+      - name: Set ZipFile Name
+        shell: bash
+        run: |
+            echo "ZIPFILE_NAME=${{format('{0}-{1}.zip', env.PROJECT_TITLE, env.BUILD_VERSION )}}" >> $GITHUB_ENV
+
+      - name: Configure Component
+        shell: pwsh
+        run: |
+            & ./configure-component.ps1 -isServer $true -applyUpdate $true
+
+      - name: Calculate Release Title
+        shell: pwsh
+        run: |
+            & ./util/x-pipeline-reader-release-title.ps1
+
+      - name: Update README
+        shell: pwsh
+        run: |
+            & ./util/x-pipeline-update-release-notes.ps1 -version "${{ env.BUILD_VERSION }}"
+
+      - run: dotnet restore ${{ env.SOLUTION_NAME }}
+        id: dotnet-restore
+        name: DotNet Restore
+
+      - run: dotnet publish ${{ env.PROJECT_NAME }} --no-restore -c Release -o ${{ env.PUBLISH_DIR }}
+        id: dotnet-publish
+        name: DotNet Publish
+        
+      - uses: actions/upload-artifact@v4
+        with:
+          name: server
           path: ${{ github.workspace }}/publish/**

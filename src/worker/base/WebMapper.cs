@@ -5,6 +5,7 @@ using legallead.reader.service.utility;
 using legallead.records.search.Classes;
 using legallead.records.search.Models;
 using Newtonsoft.Json;
+using System.Data.Common;
 using System.Xml;
 
 namespace legallead.reader.service
@@ -15,7 +16,7 @@ namespace legallead.reader.service
 
         public static T? MapFrom<TK, T>(TK source) where T : class, new()
         {
-            if (source == null) return default;
+            if (Equals(source, default(TK))) return default;
             return Mapper.Map<T>(source);
         }
 
@@ -47,6 +48,7 @@ namespace legallead.reader.service
             if (string.IsNullOrWhiteSpace(county) ||
                 string.IsNullOrWhiteSpace(st)) return 0;
             var lookup = $"{st.ToLower()}-{county.Replace(' ', '-').ToLower()}";
+            if (lookup.Equals("tx-harris")) return 30;
             if (lookup.Equals("tx-collin")) return 20;
             if (lookup.Equals("tx-tarrant")) return 10;
             return 0;
@@ -69,6 +71,7 @@ namespace legallead.reader.service
                 0 => new WebInteractive(translated, startDate, endingDate),
                 10 => new TarrantWebInteractive(translated, startDate, endingDate),
                 20 => new CollinWebInteractive(translated, startDate, endingDate),
+                30 => new HarrisCivilInteractive(translated, startDate, endingDate),
                 _ => new WebInteractive(translated, startDate, endingDate)
             };
             interactive.Persistence = new StagingPersistence();
@@ -85,6 +88,7 @@ namespace legallead.reader.service
             if (dest.Id == 0) DentonCountyNavigationMap(source, dest);
             if (dest.Id == 10) TarrantCountyNavigationMap(source, dest);
             if (dest.Id == 20) CollinCountyNavigationMap(source, dest);
+            if (dest.Id == 30) HarrisCountyNavigationMap(source, dest);
             return dest;
         }
 
@@ -152,6 +156,27 @@ namespace legallead.reader.service
             // add key for combo-index
             dest.Keys.Add(keyZero);
         }
+
+        private static void HarrisCountyNavigationMap(UserSearchRequest source, SearchNavigationParameter dest)
+        {
+            const string harrisCountyIndex = "30";
+            var accepted = "0".Split(',');
+            var cbxIndex = source.Details.Find(x => x.Name == "Search Type")?.Value ?? accepted[0];
+            if (!accepted.Contains(cbxIndex)) cbxIndex = accepted[0];
+            var idx = int.Parse(cbxIndex).ToString();
+            AppendKeys(dest, harrisCountyIndex);
+            AppendInstructions(dest, harrisCountyIndex);
+            AppendCaseInstructions(dest, harrisCountyIndex);
+            var keyZero = new SearchNavigationKey { Name = "searchTypeSelectedIndex", Value = idx };
+            var custom = new List<SearchNavigationKey>
+            {
+                new () { Name = "courtIndex", Value = "0" },
+                new () { Name = "caseStatusIndex", Value = "0" },
+                new () { Name = "navigation.control.file", Value= "harrisCivilMapping" },
+                keyZero
+            };
+            custom.ForEach(x => { AddOrUpdateKey(dest.Keys, x); });
+        }
         private static void AppendKeys(SearchNavigationParameter dest, string index)
         {
             var dates = new[] { "startDate", "endDate" };
@@ -212,6 +237,16 @@ namespace legallead.reader.service
             }
         }
 
+
+        private static void AddOrUpdateKey(List<SearchNavigationKey> list, SearchNavigationKey model)
+        {
+            var found = list.Find(x => x.Name.Equals(model.Name));
+            if (found == null) { 
+                list.Add(model);
+                return;
+            }
+            found.Value = model.Value;
+        }
 
         private static void AppendCaseInstructions(SearchNavigationParameter dest, string index)
         {
