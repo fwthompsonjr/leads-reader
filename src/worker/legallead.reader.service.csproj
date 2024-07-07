@@ -12,10 +12,14 @@
     <Description>Windows process to perform local user based searches for legal leads components.</Description>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="xml\harrisCivilMapping.json" />
     <Content Remove="_sys\process_state.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shared\geckodriver.exe" Link="geckodriver.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="xml\harrisCivilMapping.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="_sys\process_state.json">

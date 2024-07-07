@@ -1,0 +1,65 @@
+{
+  "steps": [
+    {
+      "actionName": "navigate",
+      "displayName": "open-website-base-uri",
+      "wait": 1200,
+      "locator": {
+        "find": "page",
+        "query": "https://www.cclerk.hctx.net/Applications/WebSearch/CourtSearch.aspx?CaseType=Civil"
+      }
+    },
+    {
+      "actionName": "jquery-set-selected-index",
+      "displayName": "court-drop-down list",
+      "expectedValue": "1",
+      "locator": {
+        "find": "css",
+        "query": "#ctl00_ContentPlaceHolder1_ddlCourt"
+      }
+    },
+    {
+      "actionName": "jquery-set-selected-index",
+      "displayName": "case-status-drop-down list",
+      "expectedValue": "1",
+      "locator": {
+        "find": "css",
+        "query": "#ctl00_ContentPlaceHolder1_DropDownListStatus"
+      }
+    },
+    {
+      "actionName": "jquery-set-text",
+      "displayName": "startDate",
+      "expectedValue": "1",
+      "locator": {
+        "find": "css",
+        "query": "#ctl00_ContentPlaceHolder1_txtFrom"
+      }
+    },
+    {
+      "actionName": "jquery-set-text",
+      "displayName": "endDate",
+      "expectedValue": "1",
+      "locator": {
+        "find": "css",
+        "query": "#ctl00_ContentPlaceHolder1_txtTo"
+      }
+    },
+    {
+      "actionName": "click",
+      "displayName": "login-submit",
+      "locator": {
+        "find": "css",
+        "query": "#ctl00_ContentPlaceHolder1_btnSearchCase"
+      }
+    },
+    {
+      "actionName": "harris-civil-read-table",
+      "displayName": "read-result",
+      "locator": {
+        "find": "css",
+        "query": "harris-civil-reader"
+      }
+    }
+  ]
+}

@@ -167,15 +167,15 @@ namespace legallead.reader.service
             AppendKeys(dest, harrisCountyIndex);
             AppendInstructions(dest, harrisCountyIndex);
             AppendCaseInstructions(dest, harrisCountyIndex);
+            var keyZero = new SearchNavigationKey { Name = "searchTypeSelectedIndex", Value = idx };
             var custom = new List<SearchNavigationKey>
             {
                 new () { Name = "courtIndex", Value = "0" },
-                new () { Name = "caseStatusIndex", Value = "0" }
+                new () { Name = "caseStatusIndex", Value = "0" },
+                new () { Name = "navigation.control.file", Value= "harrisCivilMapping" },
+                keyZero
             };
             custom.ForEach(x => { AddOrUpdateKey(dest.Keys, x); });
-            var keyZero = new SearchNavigationKey { Name = "searchTypeSelectedIndex", Value = idx };
-            // add key for combo-index
-            dest.Keys.Add(keyZero);
         }
         private static void AppendKeys(SearchNavigationParameter dest, string index)
         {

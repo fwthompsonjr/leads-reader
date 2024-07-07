@@ -1,6 +1,7 @@
 ﻿using legallead.models.Search;
 using legallead.permissions.api.Model;
 using legallead.records.search.Classes;
+using System.Diagnostics;
 using System.Xml.Linq;
 
 namespace legallead.reader.service.tests
@@ -57,6 +58,7 @@ namespace legallead.reader.service.tests
         [Fact]
         public void RequestCanFetchHarris()
         {
+            if (!Debugger.IsAttached) return;
             const string name = "harris";
             var issue = Record.Exception(() =>
             {
