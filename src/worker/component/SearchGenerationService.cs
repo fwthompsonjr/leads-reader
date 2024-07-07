@@ -4,6 +4,7 @@ using legallead.models.Search;
 using legallead.permissions.api.Model;
 using legallead.reader.service;
 using legallead.reader.service.interfaces;
+using legallead.reader.service.models;
 using legallead.reader.service.services;
 using legallead.records.search.Classes;
 using legallead.records.search.Models;
@@ -83,7 +84,7 @@ namespace component
                     if (queue == null || queue.Count == 0) return;
                     queue = queueFilterSvc.Apply(queue);
                     if (queue.Count == 0) { return; }
-                    using var hideprocess = new HiddenWindowService();
+                    using var hideprocess = GetWindowService();
                     var message = $"Found ( {queue.Count} ) records to process.";
                     DataService.Echo(message);
                     queue.ForEach(Generate);
@@ -263,7 +264,32 @@ namespace component
             var tolerance = DateTime.UtcNow.AddMinutes(-10);
             ErrorCollection.RemoveAll(x => x.CreateDate < tolerance);
         }
-
+        private static HiddenWindowService GetWindowService()
+        {
+            if (OperationMode.Headless) return new HiddenWindowService(false);
+            return new HiddenWindowService();
+        }
+        private static OperationSetting OperationMode => operationSetting ??= GetSetting();
+        private static OperationSetting? operationSetting;
+        private static OperationSetting GetSetting()
+        {
+            var fallback = new OperationSetting();
+            var content = legallead.reader.service.Properties.Resources.operation_mode;
+            if (string.IsNullOrEmpty(content)) return fallback;
+            var mapped = TryJsConvert<OperationSetting>(content) ?? fallback;
+            return mapped;
+        }
+        private static T? TryJsConvert<T>(string json)
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(json);
+            }
+            catch (Exception)
+            {
+                return default;
+            }
+        }
 
         private static readonly List<RecentError> ErrorCollection = [];
         internal static readonly string[] action = ["sevice health: {0}", "is working: {1}", "has errors: {2}", "error count: {3}"];

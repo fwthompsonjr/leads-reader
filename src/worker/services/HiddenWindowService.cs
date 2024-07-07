@@ -22,11 +22,12 @@ namespace legallead.reader.service.services
             "chromedriver",
             "IEDriverServer"
         ];
-        private readonly System.Timers.Timer aTimer;
+        protected readonly System.Timers.Timer? aTimer;
         private bool disposedValue;
 
-        public HiddenWindowService()
+        public HiddenWindowService(bool hasTimer = true)
         {
+            if (!hasTimer) { return; }
             // Create a timer with a two second interval.
             aTimer = new System.Timers.Timer(250);
             // Hook up the Elapsed event for the timer. 
@@ -73,8 +74,8 @@ namespace legallead.reader.service.services
             {
                 if (disposing)
                 {
-                    aTimer.Stop();
-                    aTimer.Dispose();
+                    aTimer?.Stop();
+                    aTimer?.Dispose();
                     RestoreBrowserWindows();
                 }
                 disposedValue = true;
