@@ -5,6 +5,7 @@ using legallead.reader.service.utility;
 using legallead.records.search.Classes;
 using legallead.records.search.Models;
 using Newtonsoft.Json;
+using System.Data.Common;
 using System.Xml;
 
 namespace legallead.reader.service
@@ -166,6 +167,12 @@ namespace legallead.reader.service
             AppendKeys(dest, harrisCountyIndex);
             AppendInstructions(dest, harrisCountyIndex);
             AppendCaseInstructions(dest, harrisCountyIndex);
+            var custom = new List<SearchNavigationKey>
+            {
+                new () { Name = "courtIndex", Value = "0" },
+                new () { Name = "caseStatusIndex", Value = "0" }
+            };
+            custom.ForEach(x => { AddOrUpdateKey(dest.Keys, x); });
             var keyZero = new SearchNavigationKey { Name = "searchTypeSelectedIndex", Value = idx };
             // add key for combo-index
             dest.Keys.Add(keyZero);
@@ -230,6 +237,16 @@ namespace legallead.reader.service
             }
         }
 
+
+        private static void AddOrUpdateKey(List<SearchNavigationKey> list, SearchNavigationKey model)
+        {
+            var found = list.Find(x => x.Name.Equals(model.Name));
+            if (found == null) { 
+                list.Add(model);
+                return;
+            }
+            found.Value = model.Value;
+        }
 
         private static void AppendCaseInstructions(SearchNavigationParameter dest, string index)
         {
