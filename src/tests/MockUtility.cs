@@ -1,12 +1,14 @@
 ﻿using component;
 using legallead.jdbc.interfaces;
 using legallead.logging.interfaces;
+using legallead.permissions.api.Model;
 using legallead.reader.service.interfaces;
 using legallead.reader.service.models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Newtonsoft.Json;
 
 namespace legallead.reader.service.tests
 {
@@ -71,6 +73,18 @@ namespace legallead.reader.service.tests
             services.AddSingleton(m => mWorkingSvc.Object);
 
         }
+        public static UserSearchRequest? GetRequest(string county)
+        {
+            const string single = "'";
+            var doubleQt = '"'.ToString();
+            if (SampleRequests.Count == 0) { return null; }
+            var request = SampleRequests.Find(x => 
+                x.Target.Equals(county, StringComparison.OrdinalIgnoreCase));
+            if (request == null) { return null; }
+            var content = string.Join(Environment.NewLine, request.Payload);
+            content = content.Replace(single, doubleQt);
+            return TryJsConvert<UserSearchRequest>(content);
+        }
 
         public static IConfiguration GetConfiguration()
         {
@@ -93,6 +107,35 @@ namespace legallead.reader.service.tests
             return new ConfigurationBuilder()
                 .AddInMemoryCollection(dictionary)
                 .Build();
+        }
+
+        private static List<MockRequest>? sampleRequests;
+        private static List<MockRequest> SampleRequests => sampleRequests ??= GetSampleRequests();
+        private static string RequestSample => requestSample ??= GetRequestSample();
+        private static string? requestSample;
+        private static string GetRequestSample()
+        {
+            if (!string.IsNullOrEmpty(requestSample)) return requestSample;
+            var sample = Properties.Resources.requestsample_json;
+            return sample;
+        }
+        private static List<MockRequest> GetSampleRequests()
+        {
+            var json = RequestSample;
+            if (string.IsNullOrWhiteSpace(json)) return [];
+            return TryJsConvert<List<MockRequest>>(json) ?? [];
+        }
+
+        private static T? TryJsConvert<T>(string json)
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(json);
+            }
+            catch (Exception)
+            {
+                return default;
+            }
         }
     }
 }

@@ -9,6 +9,7 @@ using legallead.logging.interfaces;
 using legallead.reader.service.interfaces;
 using legallead.reader.service.models;
 using legallead.reader.service.services;
+using Newtonsoft.Json;
 using System.Diagnostics.CodeAnalysis;
 
 namespace legallead.reader.service.utility
@@ -82,9 +83,22 @@ namespace legallead.reader.service.utility
                 var lg = p.GetRequiredService<ILoggingService>();
                 return new LoggingRepository(lg);
             });
-
+            services.AddSingleton(s => {
+                var fallback = new OperationSetting();
+                var content = Properties.Resources.operation_mode;
+                if (string.IsNullOrEmpty(content)) return fallback;
+                var mapped = TryJsConvert<OperationSetting>(content) ?? fallback;
+                return mapped;
+            });
             services.AddSingleton<IIndexReader, IndexReader>();
-            services.AddSingleton<IQueueFilter, QueueFilter>();
+            services.AddSingleton<IQueueFilter>(s =>
+            {
+                var reader = s.GetRequiredService<IIndexReader>();
+                var filter = new QueueFilter(reader);
+                var mapped = s.GetRequiredService<OperationSetting>();
+                if (mapped == null || !mapped.IsServer) return filter;
+                return new QueueNonFilter();
+            });
             services.AddSingleton<IWorkingIndicator, WorkingIndicator>();
 
             services.AddSingleton(s =>
@@ -115,6 +129,18 @@ namespace legallead.reader.service.utility
             catch (Exception)
             {
                 return backup;
+            }
+        }
+
+        private static T? TryJsConvert<T>(string json)
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(json);
+            }
+            catch (Exception)
+            {
+                return default;
             }
         }
     }
