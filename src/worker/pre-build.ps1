@@ -160,7 +160,7 @@ function updateReleaseTextFile( $text, $destination )
 
 $tmp = getReleaseNotes
 
-updateOperationModel
+# updateOperationModel
 updateVersionNumbers
 updateReadMe
 updateReleaseTextFile -text $tmp -destination $releaseNotesFile

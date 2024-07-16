@@ -1,4 +1,5 @@
-﻿using legallead.jdbc.entities;
+﻿using legallead.jdbc;
+using legallead.jdbc.entities;
 using legallead.jdbc.interfaces;
 using legallead.models.Search;
 using legallead.permissions.api.Model;
@@ -24,6 +25,7 @@ namespace component
         private readonly IExcelGenerator generator;
         private readonly IQueueFilter queueFilterSvc;
         private readonly IWorkingIndicator indicatorSvc;
+        private readonly IUserSearchRepository repoSvc;
 
         public SearchGenerationService(
             ILoggingRepository? logger,
@@ -33,11 +35,13 @@ namespace component
             IExcelGenerator excel,
             IMainWindowService main,
             IQueueFilter filter,
-            IWorkingIndicator indicator) : base(logger, repo, component, settings)
+            IWorkingIndicator indicator,
+            IUserSearchRepository searchRepository) : base(logger, repo, component, settings)
         {
             generator = excel;
             queueFilterSvc = filter;
             indicatorSvc = indicator;
+            repoSvc = searchRepository;
             if (!main.IsMainVisible)
             {
                 Debug.WriteLine("Main window is hidden.");
@@ -122,19 +126,14 @@ namespace component
                 PostStatus(uniqueId, 0, 1);
                 PostStatus(uniqueId, 1, 0);
                 var interaction = WebMapper.MapFrom<UserSearchRequest, WebInteractive>(bo);
+                var parameter = WebMapper.MapFrom<UserSearchRequest, SearchRequest>(bo);
                 if (interaction == null)
                 {
                     PostStatus(uniqueId, 1, 2);
                     _ = _queueDb.Complete(uniqueId);
                     return;
                 }
-#if DEBUG
-                var parameter = WebMapper.MapFrom<UserSearchRequest, SearchRequest>(bo);
-                if (parameter != null && parameter.WebId == 30)
-                {
-                    Debugger.Break();
-                }
-#endif
+
                 interaction.UniqueId = uniqueId;
                 PostStatus(uniqueId, 1, 1);
                 PostStatus(uniqueId, 2, 0);
@@ -147,7 +146,8 @@ namespace component
                 }
                 PostStatus(uniqueId, 2, 1);
                 PostStatus(uniqueId, 3, 0);
-                if (response.WebsiteId == 0) response.WebsiteId = 1;
+                if (response.WebsiteId == 0) response.WebsiteId = parameter?.WebId ?? 1;
+                
                 var addresses = GetAddresses(response);
                 if (addresses == null)
                 {
@@ -165,7 +165,18 @@ namespace component
                     return;
                 }
                 PostStatus(uniqueId, 4, 1);
+                var rcount = response.PeopleList.Count;
+                if (parameter != null && rcount > 0 && parameter.WebId == 30)
+                {
+                    var js = JsonConvert.SerializeObject(response.PeopleList);
+                    repoSvc.Append(SearchTargetTypes.Staging, uniqueId, js, "data-output-person-addres");
+                    repoSvc.Append(SearchTargetTypes.Staging, uniqueId, rcount, "data-output-row-count");
+                }
                 _ = _queueDb.Complete(uniqueId);
+                if (parameter != null && rcount > 0 && parameter.WebId == 30)
+                {   
+                    repoSvc.UpdateRowCount(uniqueId, rcount);
+                }
             }
             catch (Exception ex)
             {
@@ -266,8 +277,7 @@ namespace component
         }
         private static HiddenWindowService GetWindowService()
         {
-            if (OperationMode.Headless) return new HiddenWindowService(false);
-            return new HiddenWindowService();
+            return new HiddenWindowService(OperationMode.Headless);
         }
         private static OperationSetting OperationMode => operationSetting ??= GetSetting();
         private static OperationSetting? operationSetting;

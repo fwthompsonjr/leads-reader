@@ -1,3 +1,4 @@
 {
-    "mode":  "single"
+    "headless":  true,
+    "mode":  "service"
 }
