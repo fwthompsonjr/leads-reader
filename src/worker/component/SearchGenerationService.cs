@@ -286,19 +286,8 @@ namespace component
             var fallback = new OperationSetting();
             var content = legallead.reader.service.Properties.Resources.operation_mode;
             if (string.IsNullOrEmpty(content)) return fallback;
-            var mapped = TryJsConvert<OperationSetting>(content) ?? fallback;
+            var mapped = TryConvert<OperationSetting>(content) ?? fallback;
             return mapped;
-        }
-        private static T? TryJsConvert<T>(string json)
-        {
-            try
-            {
-                return JsonConvert.DeserializeObject<T>(json);
-            }
-            catch (Exception)
-            {
-                return default;
-            }
         }
 
         private static readonly List<RecentError> ErrorCollection = [];
