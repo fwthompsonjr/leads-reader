@@ -22,12 +22,19 @@ namespace legallead.reader.service.services
         private bool isWindowVisible;
         private readonly bool showAppWindow;
 
-        public MainWindowService(IConfiguration configuration)
+        public MainWindowService(IConfiguration? configuration)
         {
             isWindowVisible = true;
-            string environ = ServiceExtensions.GetConfigOrDefault(configuration, "ShowAppWindow", "false");
-            _ = bool.TryParse(environ, out var isActive);
-            showAppWindow = isActive;
+            if (configuration == null)
+            {
+                showAppWindow = false;
+            }
+            else
+            {
+                string environ = ServiceExtensions.GetConfigOrDefault(configuration, "ShowAppWindow", "false");
+                _ = bool.TryParse(environ, out var isActive);
+                showAppWindow = isActive;
+            }
             // Create a timer with a two second interval.
             aTimer = new System.Timers.Timer(500);
             // Hook up the Elapsed event for the timer. 

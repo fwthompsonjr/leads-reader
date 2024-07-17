@@ -22,7 +22,8 @@ namespace legallead.reader.service.tests.timed
                 var q = provider.GetRequiredService<IQueueFilter>();
                 var indc = provider.GetRequiredService<IWorkingIndicator>();
                 var repo = provider.GetRequiredService<IUserSearchRepository>();
-                var sut = new SearchGenerationService(logger, search, bck, settings, exl, mn, q, indc, repo);
+                var helper = provider.GetRequiredService<ISearchGenerationHelper>();
+                var sut = new SearchGenerationService(logger, search, bck, settings, exl, mn, q, indc, repo, helper);
                 Assert.NotNull(sut);
             });
             Assert.Null(problems);

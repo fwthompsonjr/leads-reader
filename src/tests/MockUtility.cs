@@ -31,6 +31,7 @@ namespace legallead.reader.service.tests
             var mWorkLogger = new Mock<ILogger<Worker>>();
             var mWorkingSvc = new Mock<IWorkingIndicator>();
             var mSearchGenerationService = new Mock<ISearchGenerationService>();
+            var mSearchHelper = new Mock<ISearchGenerationHelper>();
             configuration ??= GetConfiguration();
             var setting = new BackgroundServiceSettings
             {
@@ -55,6 +56,7 @@ namespace legallead.reader.service.tests
             services.AddSingleton(m => mQueueFilter);
             services.AddSingleton(m => mWorkLogger);
             services.AddSingleton(m => mSearchGenerationService);
+            services.AddSingleton(m => mSearchHelper);
 
             services.AddSingleton(m => mLoggingRepository.Object);
             services.AddSingleton(m => mDapperCommand.Object);
@@ -71,6 +73,7 @@ namespace legallead.reader.service.tests
             services.AddSingleton(m => mWorkLogger.Object);
             services.AddSingleton(m => mSearchGenerationService.Object);
             services.AddSingleton(m => mWorkingSvc.Object);
+            services.AddSingleton(m => mSearchHelper.Object);
 
         }
         public static UserSearchRequest? GetRequest(string county)

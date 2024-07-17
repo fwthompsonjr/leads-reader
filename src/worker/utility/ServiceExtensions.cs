@@ -48,6 +48,11 @@ namespace legallead.reader.service.utility
                 var context = x.GetRequiredService<DataContext>();
                 return new BgComponentRepository(context);
             });
+            services.AddSingleton<ISearchStatusRepository, SearchStatusRepository>(x =>
+            {
+                var context = x.GetRequiredService<DataContext>();
+                return new SearchStatusRepository(context);
+            });
             services.AddSingleton<IExcelGenerator, ExcelGenerator>();
             // logging
             services.AddSingleton<LoggingDbServiceProvider>();
@@ -101,9 +106,19 @@ namespace legallead.reader.service.utility
             });
             services.AddSingleton<IWorkingIndicator, WorkingIndicator>();
 
+            services.AddSingleton<ISearchGenerationHelper>(x =>
+            {
+                var excel = x.GetRequiredService<IExcelGenerator>();
+                var search = x.GetRequiredService<IUserSearchRepository>();
+                var queue = x.GetRequiredService<ISearchQueueRepository>();
+                var sts = x.GetRequiredService<ISearchStatusRepository>();
+                var logger = x.GetService<ILoggingRepository>();
+                return new SearchGenerationHelper(excel, search, queue, sts, logger);
+            });
+
             services.AddSingleton(s =>
             {
-                var config = s.GetRequiredService<IConfiguration>();
+                var config = s.GetService<IConfiguration>();
                 var logger = s.GetRequiredService<ILoggingRepository>();
                 var search = s.GetRequiredService<ISearchQueueRepository>();
                 var component = s.GetRequiredService<IBgComponentRepository>();
@@ -113,7 +128,8 @@ namespace legallead.reader.service.utility
                 var qu = s.GetRequiredService<IQueueFilter>();
                 var indc = s.GetRequiredService<IWorkingIndicator>();
                 var rpo = s.GetRequiredService<IUserSearchRepository>();
-                return new SearchGenerationService(logger, search, component, settings, excel, mn, qu, indc, rpo);
+                var helper = s.GetRequiredService<ISearchGenerationHelper>();
+                return new SearchGenerationService(logger, search, component, settings, excel, mn, qu, indc, rpo, helper);
             });
             services.AddSingleton<ISearchGenerationService>(p => p.GetRequiredService<SearchGenerationService>());
             services.AddSingleton(s => { return s; });
@@ -132,7 +148,7 @@ namespace legallead.reader.service.utility
                 return backup;
             }
         }
-
+        [ExcludeFromCodeCoverage]
         private static T? TryJsConvert<T>(string json)
         {
             try
