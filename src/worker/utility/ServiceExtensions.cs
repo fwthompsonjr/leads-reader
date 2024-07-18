@@ -124,13 +124,11 @@ namespace legallead.reader.service.utility
                 var search = s.GetRequiredService<ISearchQueueRepository>();
                 var component = s.GetRequiredService<IBgComponentRepository>();
                 var settings = s.GetRequiredService<IBackgroundServiceSettings>();
-                var excel = s.GetRequiredService<IExcelGenerator>();
                 var mn = new MainWindowService(config);
                 var qu = s.GetRequiredService<IQueueFilter>();
                 var indc = s.GetRequiredService<IWorkingIndicator>();
-                var rpo = s.GetRequiredService<IUserSearchRepository>();
                 var helper = s.GetRequiredService<ISearchGenerationHelper>();
-                return new SearchGenerationService(logger, search, component, settings, excel, mn, qu, indc, rpo, helper);
+                return new SearchGenerationService(logger, search, component, settings, mn, qu, indc, helper);
             });
             services.AddSingleton<ISearchGenerationService>(p => p.GetRequiredService<SearchGenerationService>());
             services.AddSingleton(s => { return s; });

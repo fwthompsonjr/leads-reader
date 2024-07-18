@@ -5,6 +5,7 @@ using legallead.reader.service.models;
 using legallead.reader.service.services;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace component
 {
@@ -15,10 +16,8 @@ namespace component
         private const string ns = "legallead.reader.service";
         private const string clsname = "search.generation.service";
 
-        private readonly IExcelGenerator generator;
         private readonly IQueueFilter queueFilterSvc;
         private readonly IWorkingIndicator indicatorSvc;
-        private readonly IUserSearchRepository repoSvc;
         private readonly ISearchGenerationHelper helperSvc;
 
         public SearchGenerationService(
@@ -26,17 +25,13 @@ namespace component
             ISearchQueueRepository? repo,
             IBgComponentRepository? component,
             IBackgroundServiceSettings? settings,
-            IExcelGenerator excel,
             IMainWindowService main,
             IQueueFilter filter,
             IWorkingIndicator indicator,
-            IUserSearchRepository searchRepository,
             ISearchGenerationHelper helper) : base(logger, repo, component, settings)
         {
-            generator = excel;
             queueFilterSvc = filter;
             indicatorSvc = indicator;
-            repoSvc = searchRepository;
             helperSvc = helper;
             if (!main.IsMainVisible)
             {
@@ -118,8 +113,7 @@ namespace component
         {
             return new HiddenWindowService(OperationMode.Headless);
         }
-        private static OperationSetting OperationMode => operationSetting ??= GetSetting();
-        private static OperationSetting? operationSetting;
+        [ExcludeFromCodeCoverage(Justification = "Private member tested from public methods")]
         private static OperationSetting GetSetting()
         {
             var fallback = new OperationSetting();
@@ -129,6 +123,8 @@ namespace component
             return mapped;
         }
 
+        private static OperationSetting? operationSetting;
+        private static OperationSetting OperationMode => operationSetting ??= GetSetting();
         private static readonly List<RecentError> ErrorCollection = [];
         internal static readonly string[] action = ["sevice health: {0}", "is working: {1}", "has errors: {2}", "error count: {3}"];
     }

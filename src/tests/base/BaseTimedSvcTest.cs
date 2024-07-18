@@ -1,4 +1,4 @@
-﻿namespace legallead.reader.service.tests
+﻿namespace legallead.reader.service.tests.@base
 {
     public class BaseTimedSvcTest
     {
