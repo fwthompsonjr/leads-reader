@@ -38,7 +38,7 @@ namespace legallead.reader.service.services
                 using var ms = new MemoryStream();
                 package.SaveAs(ms);
                 var content = ms.ToArray();
-                _ = repo.Content(uniqueId, content).ConfigureAwait(false);
+                _ = repo.Content(uniqueId, content).GetAwaiter().GetResult();
                 return true;
             }
             catch (Exception ex)
