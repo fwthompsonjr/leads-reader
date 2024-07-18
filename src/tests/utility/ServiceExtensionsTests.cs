@@ -6,9 +6,7 @@ using legallead.logging.interfaces;
 using legallead.reader.service.interfaces;
 using legallead.reader.service.models;
 using legallead.reader.service.utility;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 
 namespace legallead.reader.service.tests.utility
 {

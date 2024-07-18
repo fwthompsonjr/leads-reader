@@ -1,16 +1,9 @@
-﻿using legallead.jdbc;
-using legallead.jdbc.entities;
-using legallead.jdbc.interfaces;
-using legallead.models.Search;
-using legallead.permissions.api.Model;
+﻿using legallead.jdbc.interfaces;
 using legallead.reader.service;
 using legallead.reader.service.interfaces;
 using legallead.reader.service.models;
 using legallead.reader.service.services;
-using legallead.records.search.Classes;
-using legallead.records.search.Models;
 using Newtonsoft.Json;
-using OfficeOpenXml;
 using System.Diagnostics;
 
 namespace component

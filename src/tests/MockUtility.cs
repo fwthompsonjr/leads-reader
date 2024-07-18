@@ -40,7 +40,7 @@ namespace legallead.reader.service.tests
                 Interval = configuration.GetValue<int>("BackgroundServices:Interval")
             };
             services.AddSingleton<IBackgroundServiceSettings>(x => setting);
-            
+
             services.AddSingleton(m => configuration);
             services.AddSingleton(m => mLoggingRepository);
             services.AddSingleton(m => mDapperCommand);
@@ -81,7 +81,7 @@ namespace legallead.reader.service.tests
             const string single = "'";
             var doubleQt = '"'.ToString();
             if (SampleRequests.Count == 0) { return null; }
-            var request = SampleRequests.Find(x => 
+            var request = SampleRequests.Find(x =>
                 x.Target.Equals(county, StringComparison.OrdinalIgnoreCase));
             if (request == null) { return null; }
             var content = string.Join(Environment.NewLine, request.Payload);

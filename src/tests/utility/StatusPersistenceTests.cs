@@ -1,15 +1,7 @@
 ﻿using Bogus;
-using Bogus.DataSets;
-using legallead.jdbc.entities;
 using legallead.jdbc.interfaces;
 using legallead.reader.service.utility;
-using legallead.records.search.Models;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace legallead.reader.service.tests.utility
 {

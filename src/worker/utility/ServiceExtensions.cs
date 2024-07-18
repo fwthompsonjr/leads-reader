@@ -88,7 +88,8 @@ namespace legallead.reader.service.utility
                 var lg = p.GetRequiredService<ILoggingService>();
                 return new LoggingRepository(lg);
             });
-            services.AddSingleton(s => {
+            services.AddSingleton(s =>
+            {
                 var fallback = new OperationSetting();
                 var content = Properties.Resources.operation_mode;
                 if (string.IsNullOrEmpty(content)) return fallback;
