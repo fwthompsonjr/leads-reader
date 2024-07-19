@@ -1,8 +1,10 @@
 using component;
 using legallead.reader.service.utility;
+using System.Diagnostics.CodeAnalysis;
 
 namespace legallead.reader.service
 {
+    [ExcludeFromCodeCoverage]
     internal static class Program
     {
         private static void Main(string[] args)

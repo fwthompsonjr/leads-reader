@@ -8,6 +8,7 @@ on:
       - "!releases"
     paths:
       - "src/worker/**"
+      - "src/tests/**"
 
 env:
   SOLUTION_NAME: ${{ github.workspace }}\src\legallead.reader.sln
@@ -26,3 +27,7 @@ jobs:
       - run: dotnet build ${{ env.SOLUTION_NAME }} --no-restore -c Release
         id: dotnet-build
         name: DotNet Build
+
+      - run: dotnet test ${{ env.SOLUTION_NAME }} --no-restore -c Release
+        id: dotnet-test
+        name: DotNet Test

@@ -26,6 +26,8 @@ if ( $null -eq $config.OperationMode ) { return; }
 $config.OperationMode = $modeName;
 $settings = ($config | ConvertTo-Json);
 if ($applyUpdate -ne $true ) { return; }
+Write-Host "Configuration Headless := $isHeadless"
+Write-Host "Configuration OperationMode := $modeName"
 
 [System.IO.File]::WriteAllText( $operationsFile, $ops );
 [System.IO.File]::WriteAllText( $appSettingsFile, $settings );

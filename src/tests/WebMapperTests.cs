@@ -2,7 +2,6 @@
 using legallead.permissions.api.Model;
 using legallead.records.search.Classes;
 using System.Diagnostics;
-using System.Xml.Linq;
 
 namespace legallead.reader.service.tests
 {

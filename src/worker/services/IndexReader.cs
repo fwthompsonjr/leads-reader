@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace legallead.reader.service.services
@@ -16,7 +17,7 @@ namespace legallead.reader.service.services
         public string SearchLocation => ConfigurationFolder;
         public void Rebuild()
         {
-            var arg = new FileSystemEventArgs(WatcherChangeTypes.Changed, ConfigurationFolder, null);
+            var arg = new FileSystemEventArgs(WatcherChangeTypes.Changed, SearchLocation, null);
             OnChanged(new(), arg);
         }
         public IEnumerable<string> Indexes => Collection;
@@ -70,6 +71,7 @@ namespace legallead.reader.service.services
         private static string ConfigurationFolder => _configurationFolder ??= GetConfigurationFolderName();
 
         private static string? _configurationFolder;
+        [ExcludeFromCodeCoverage]
         private static string GetConfigurationFolderName()
         {
             if (_configurationFolder != null)
@@ -93,7 +95,7 @@ namespace legallead.reader.service.services
             _configurationFolder = configPath;
             return configPath;
         }
-
+        [ExcludeFromCodeCoverage]
         private static T? Get<T>(string json)
         {
             try

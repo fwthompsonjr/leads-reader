@@ -15,6 +15,7 @@ namespace legallead.reader.service.services
                 string extXml = CommonKeyIndexes.ExtensionXml;
                 string extFile = CommonKeyIndexes.ExtensionXlsx;
                 string tmpFileName = fetchResult.Result.Replace(extXml, extFile);
+                if (fetchResult.WebsiteId == 0) { fetchResult.WebsiteId = 1; }
                 ExcelWriter writer = new();
                 return writer.ConvertToPersonTable(
                 addressList: fetchResult.PeopleList,
@@ -37,7 +38,7 @@ namespace legallead.reader.service.services
                 using var ms = new MemoryStream();
                 package.SaveAs(ms);
                 var content = ms.ToArray();
-                _ = repo.Content(uniqueId, content).ConfigureAwait(false);
+                _ = repo.Content(uniqueId, content).GetAwaiter().GetResult();
                 return true;
             }
             catch (Exception ex)
