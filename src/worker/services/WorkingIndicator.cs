@@ -1,5 +1,6 @@
 ﻿using legallead.reader.service.interfaces;
 using Newtonsoft.Json;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace legallead.reader.service.services
@@ -33,10 +34,14 @@ namespace legallead.reader.service.services
 
             var serialized = JsonConvert.SerializeObject(model, Formatting.Indented);
             var targetFile = Path.Combine(StatusFolder, childFileName);
-            if (File.Exists(targetFile)) { File.Delete(targetFile); }
-            File.WriteAllText(targetFile, serialized);
-            _statusFile = targetFile;
+            lock (sync)
+            {
+                if (File.Exists(targetFile)) { File.Delete(targetFile); }
+                File.WriteAllText(targetFile, serialized);
+                _statusFile = targetFile;
+            }
         }
+
         private static bool GetShutdownProperty()
         {
             if (string.IsNullOrEmpty(StatusFolder) || string.IsNullOrEmpty(StatusFileName)) return false;
@@ -47,14 +52,17 @@ namespace legallead.reader.service.services
                 return current?.ShutdownOnComplete ?? false;
             }
         }
+
         private static readonly object sync = new();
+        private static string? _statusFolder;
+        private static string? _statusFile;
+
         private const string childFileName = "process-state.json";
         private static string StatusFolder => _statusFolder ??= GetStatusFolderName();
         private static string StatusFileName => _statusFile ??= GetStatusFile();
 
 
-        private static string? _statusFolder;
-        private static string? _statusFile;
+        [ExcludeFromCodeCoverage(Justification = "Private member tested from public accessor")]
         private static string GetStatusFolderName()
         {
             if (_statusFolder != null)
@@ -78,6 +86,8 @@ namespace legallead.reader.service.services
             _statusFolder = configPath;
             return configPath;
         }
+
+        [ExcludeFromCodeCoverage(Justification = "Private member tested from public accessor")]
         private static string GetStatusFile()
         {
             var parent = StatusFolder;

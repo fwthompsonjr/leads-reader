@@ -5,7 +5,6 @@ using legallead.reader.service.utility;
 using legallead.records.search.Classes;
 using legallead.records.search.Models;
 using Newtonsoft.Json;
-using System.Data.Common;
 using System.Xml;
 
 namespace legallead.reader.service
@@ -241,7 +240,8 @@ namespace legallead.reader.service
         private static void AddOrUpdateKey(List<SearchNavigationKey> list, SearchNavigationKey model)
         {
             var found = list.Find(x => x.Name.Equals(model.Name));
-            if (found == null) { 
+            if (found == null)
+            {
                 list.Add(model);
                 return;
             }

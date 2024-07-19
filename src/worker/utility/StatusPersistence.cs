@@ -9,8 +9,13 @@ namespace legallead.reader.service.utility
     {
         private const jdbc.SearchTargetTypes targetType = jdbc.SearchTargetTypes.Status;
         private readonly IUserSearchRepository _repo;
-        public StatusPersistence()
+        public StatusPersistence(IUserSearchRepository? repo = null)
         {
+            if (repo != null)
+            {
+                _repo = repo;
+                return;
+            }
             var command = new DapperExecutor();
             var context = new DataContext(command);
             _repo = new UserSearchRepository(context);

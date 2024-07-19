@@ -5,57 +5,26 @@ $jsonReadMe = [System.IO.Path]::Combine( $workfolder, "z-app-version.json" );
 $backupReadMe = [System.IO.Path]::Combine( $workfolder, "README.backup.md" );
 $releaseNotesFile = [System.IO.Path]::Combine( $workfolder, "RELEASE-NOTES.txt" );
 $versionLine = '| x.y.z | {{ date }} | {{ description }} |'
-$appSettingsFile = [System.IO.Path]::Combine( $workfolder, "appsettings.json" );
-$operationsFile = [System.IO.Path]::Combine( $workfolder, "_configuration/operation-mode.txt" );
 
-$ops = @(
-    @{ 
-        "mode" = "single" 
-        "headless" = $true
-    },
-    @{ 
-        "mode" = "service"
-        "headless" = $true 
+function stopDriverProcess {
+    try {
+        $drivers = @( 'geckodriver', 'chromedriver' );
+        $drivers | ForEach-Object {
+            $p = $_;
+            $prcs = Get-Process -Name $p -ErrorAction SilentlyContinue
+            if ( $null -ne $prcs ) { $prcs | Kill }
+        }
+    } catch {
+        # suppress error
     }
-);
-
-
-function setOperationModel($path, $configuration)
-{
-    if ( [System.IO.File]::Exists( $path ) -eq $false ) { return; }
-    if ( $null -eq $configuration ) { return; }
-    $js = $configuration | ConvertTo-Json
-    [System.IO.File]::WriteAllText( $path, $js );
 }
 
-function updateOperationModel() {
-    if ( [System.IO.File]::Exists( $appSettingsFile ) -eq $false ) { return; }
-    if ( [System.IO.File]::Exists( $operationsFile ) -eq $false ) { return; }
-    $id = 0;
-    $selection = $ops[$id];
-    $config = [System.IO.File]::ReadAllText( $appSettingsFile ) | ConvertFrom-Json
-    if ( $null -eq $config.OperationMode ) { 
-        setOperationModel -path $operationsFile -configuration $selection
-        return; 
-    }
-    if( "server" -ne $config.OperationMode ) { 
-        setOperationModel -path $operationsFile -configuration $selection
-        return; 
-    }
-    $id = 1;
-    $selection = $ops[$id];
-    if ($null -ne $config.headless) {
-        $selection.headless = $config.headless;
-    }
-    setOperationModel -path $operationsFile -configuration $selection
-}
 function getVersionNumber {
     if ( [System.IO.File]::Exists( $jsonReadMe ) -eq $false ) { 
         return "1.0.0"; 
     }
     $jscontent = [System.IO.File]::ReadAllText( $jsonReadMe ) | ConvertFrom-Json
     return $jscontent.Item(0).id
-    
 }
 
 function updateReadMe() {
@@ -160,7 +129,7 @@ function updateReleaseTextFile( $text, $destination )
 
 $tmp = getReleaseNotes
 
-updateOperationModel
+stopDriverProcess
 updateVersionNumbers
 updateReadMe
 updateReleaseTextFile -text $tmp -destination $releaseNotesFile

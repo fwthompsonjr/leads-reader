@@ -48,6 +48,11 @@ namespace legallead.reader.service.utility
                 var context = x.GetRequiredService<DataContext>();
                 return new BgComponentRepository(context);
             });
+            services.AddSingleton<ISearchStatusRepository, SearchStatusRepository>(x =>
+            {
+                var context = x.GetRequiredService<DataContext>();
+                return new SearchStatusRepository(context);
+            });
             services.AddSingleton<IExcelGenerator, ExcelGenerator>();
             // logging
             services.AddSingleton<LoggingDbServiceProvider>();
@@ -83,7 +88,8 @@ namespace legallead.reader.service.utility
                 var lg = p.GetRequiredService<ILoggingService>();
                 return new LoggingRepository(lg);
             });
-            services.AddSingleton(s => {
+            services.AddSingleton(s =>
+            {
                 var fallback = new OperationSetting();
                 var content = Properties.Resources.operation_mode;
                 if (string.IsNullOrEmpty(content)) return fallback;
@@ -101,18 +107,28 @@ namespace legallead.reader.service.utility
             });
             services.AddSingleton<IWorkingIndicator, WorkingIndicator>();
 
+            services.AddSingleton<ISearchGenerationHelper>(x =>
+            {
+                var excel = x.GetRequiredService<IExcelGenerator>();
+                var search = x.GetRequiredService<IUserSearchRepository>();
+                var queue = x.GetRequiredService<ISearchQueueRepository>();
+                var sts = x.GetRequiredService<ISearchStatusRepository>();
+                var logger = x.GetService<ILoggingRepository>();
+                return new SearchGenerationHelper(excel, search, queue, sts, logger);
+            });
+
             services.AddSingleton(s =>
             {
-                var config = s.GetRequiredService<IConfiguration>();
+                var config = s.GetService<IConfiguration>();
                 var logger = s.GetRequiredService<ILoggingRepository>();
                 var search = s.GetRequiredService<ISearchQueueRepository>();
                 var component = s.GetRequiredService<IBgComponentRepository>();
                 var settings = s.GetRequiredService<IBackgroundServiceSettings>();
-                var excel = s.GetRequiredService<IExcelGenerator>();
                 var mn = new MainWindowService(config);
                 var qu = s.GetRequiredService<IQueueFilter>();
                 var indc = s.GetRequiredService<IWorkingIndicator>();
-                return new SearchGenerationService(logger, search, component, settings, excel, mn, qu, indc);
+                var helper = s.GetRequiredService<ISearchGenerationHelper>();
+                return new SearchGenerationService(logger, search, component, settings, mn, qu, indc, helper);
             });
             services.AddSingleton<ISearchGenerationService>(p => p.GetRequiredService<SearchGenerationService>());
             services.AddSingleton(s => { return s; });
@@ -131,7 +147,7 @@ namespace legallead.reader.service.utility
                 return backup;
             }
         }
-
+        [ExcludeFromCodeCoverage]
         private static T? TryJsConvert<T>(string json)
         {
             try

@@ -2,10 +2,11 @@
 using legallead.reader.service;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace component
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage",
+    [SuppressMessage("Usage",
         "VSTHRD002:Avoid problematic synchronous waits", Justification = "<Pending>")]
     internal abstract class BaseTimedSvc<T> : IHostedService, IDisposable where T : class
     {
@@ -64,36 +65,23 @@ namespace component
             return Task.CompletedTask;
         }
 
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
         protected abstract void DoWork(object? state);
 
 
-        private void OnTimer(object? state)
+        protected void OnTimer(object? state)
         {
             if (DataService == null) return;
             var isActive = DataService.GetStatus().Result;
             DataService.ReportState(isActive);
             DataService.ReportHealth(GetHealth());
             if (isActive) DoWork(state);
-        }
-
-
-        private static void StopDrivers()
-        {
-            var processes = new List<string> {
-                "geckodriver",
-                "chromedriver",
-                "IEDriverServer" };
-            processes.ForEach(Kill);
-        }
-
-        private static void Kill(string processName)
-        {
-            var enumerable = Process.GetProcessesByName(processName);
-            if (enumerable == null || !enumerable.Any()) return;
-            foreach (var process in enumerable)
-            {
-                process.Kill();
-            }
         }
 
         protected virtual void Dispose(bool disposing)
@@ -108,22 +96,31 @@ namespace component
                 disposedValue = true;
             }
         }
-
-        public void Dispose()
+        [ExcludeFromCodeCoverage(Justification = "Protected member tested from public accessor")]
+        protected string GetHealth()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-
-        private string GetHealth()
-        {
-            if (_logger == null || _componentDb == null || _queueDb == null)
-                return "Unhealthly";
+            if (_logger == null || _componentDb == null || _queueDb == null) return "Unhealthly";
             if (_timer == null) return "Degraded";
             return "Healthy";
         }
 
+        [ExcludeFromCodeCoverage(Justification = "Private member tested from public accessor")]
+        private static void StopDrivers()
+        {
+            var processes = new List<string> {
+                "geckodriver",
+                "chromedriver",
+                "IEDriverServer" };
+            processes.ForEach(Kill);
+        }
+        [ExcludeFromCodeCoverage(Justification = "Private member tested from public accessor")]
+        private static void Kill(string processName)
+        {
+            var enumerable = Process.GetProcessesByName(processName);
+            if (enumerable == null || enumerable.Length == 0) return;
+            enumerable.ToList().ForEach(p => p.Kill());
+        }
+        [ExcludeFromCodeCoverage(Justification = "All protected class members tested from external accessors")]
         protected class Svcs
         {
             private readonly ILoggingRepository? _logging;
@@ -166,7 +163,7 @@ namespace component
             /// of each service. This method queries the database
             /// to determine if the service is active.
             /// </summary>
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Style",
+            [SuppressMessage("Style",
                 "VSTHRD200:Use \"Async\" suffix for async methods",
                 Justification = "Not willing to following convention for this method.")]
             public async Task<bool> GetStatus()

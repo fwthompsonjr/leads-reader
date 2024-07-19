@@ -1,9 +1,11 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Timers;
 
 namespace legallead.reader.service.services
 {
+    [ExcludeFromCodeCoverage(Justification = "Interacts with system resources.")]
     internal partial class HiddenWindowService : IDisposable
     {
         [LibraryImport("User32")]
