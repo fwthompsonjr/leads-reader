@@ -78,6 +78,7 @@ namespace component
                     if (queue == null || queue.Count == 0) return;
                     queue = queueFilterSvc.Apply(queue);
                     if (queue.Count == 0) { return; }
+                    helperSvc.Enqueue(queue);
                     using var hideprocess = GetWindowService();
                     var message = $"Found ( {queue.Count} ) records to process.";
                     DataService.Echo(message);

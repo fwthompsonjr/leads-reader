@@ -4,12 +4,15 @@ using legallead.jdbc.interfaces;
 using legallead.models.Search;
 using legallead.permissions.api.Model;
 using legallead.reader.service;
+using legallead.reader.service.interfaces;
 using legallead.reader.service.models;
+using legallead.reader.service.services;
 using legallead.records.search.Classes;
 using legallead.records.search.Models;
 using Newtonsoft.Json;
 using OfficeOpenXml;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace component
 {
@@ -18,7 +21,8 @@ namespace component
         IUserSearchRepository searchRepository,
         ISearchQueueRepository queueRepository,
         ISearchStatusRepository statusRepository,
-        ILoggingRepository? logger) : ISearchGenerationHelper
+        ILoggingRepository? logger,
+        IWebInteractiveWrapper? wrapper = null) : ISearchGenerationHelper
     {
         private const string ns = "legallead.reader.service";
         private const string clsname = "search.generation.service";
@@ -29,7 +33,7 @@ namespace component
         private readonly ISearchQueueRepository? _queueDb = queueRepository;
         private readonly ISearchStatusRepository statusSvc = statusRepository;
         private readonly ILoggingRepository? _logger = logger;
-
+        private readonly IWebInteractiveWrapper _wrapper = wrapper ?? new WebInteractiveWrapper();
         public void Enqueue(List<SearchQueueDto> collection)
         {
             if (collection.Count == 0) return;
@@ -59,7 +63,7 @@ namespace component
                 PostStatus(uniqueId, bo);
                 PostStatus(uniqueId, MessageIndexes.BeginProcess, StatusIndexes.Complete);
                 PostStatus(uniqueId, MessageIndexes.ParameterEvaluation, StatusIndexes.Begin);
-                var interaction = WebMapper.MapFrom<UserSearchRequest, WebInteractive>(bo);
+                var interaction = _wrapper.GetInterative(bo);
                 var parameter = WebMapper.MapFrom<UserSearchRequest, SearchRequest>(bo);
                 if (interaction == null)
                 {
@@ -116,7 +120,7 @@ namespace component
         {
             try
             {
-                return web.Fetch();
+                return _wrapper.Fetch(web);
             }
             catch (Exception ex)
             {
@@ -125,22 +129,26 @@ namespace component
                 return null;
             }
         }
+
         public ExcelPackage? GetAddresses(WebFetchResult fetchResult)
         {
             if (_logger == null) return null;
             return generator.GetAddresses(fetchResult, _logger);
         }
+
         public bool SerializeResult(string uniqueId, ExcelPackage package, ISearchQueueRepository repo)
         {
             if (_logger == null) return false;
             return generator.SerializeResult(uniqueId, package, repo, _logger);
         }
+
         public async Task<List<SearchQueueDto>> GetQueueAsync()
         {
             if (_queueDb == null) return [];
             var items = await _queueDb.GetQueue();
             return items;
         }
+
         public void PostStatus(string uniqueId, UserSearchRequest request)
         {
             if (_queueDb == null) return;
@@ -170,7 +178,7 @@ namespace component
             var state = indexes.Contains(statusId) ? statuses[statusId] : "status";
             var message = string.Format(messages[messageId], state);
             _ = _queueDb.Status(uniqueId, message).ConfigureAwait(false);
-            UpdateStatus(uniqueId, messageId, statusId);
+            if (indexes.Contains(statusId)) UpdateStatus(uniqueId, messageId, statusId);
 
         }
 
@@ -185,20 +193,8 @@ namespace component
             }
         }
 
-        private void UpdateStatus(string id, int messageId = 0, int statusId = 0)
-        {
-            try
-            {
-                var bo = new WorkStatusBo { Id = id, MessageId = messageId, StatusId = statusId };
-                statusSvc.Update(bo);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-            }
-        }
 
-        private void GenerationComplete(string uniqueId, SearchRequest? parameter, List<PersonAddress> list)
+        public void GenerationComplete(string uniqueId, SearchRequest? parameter, List<PersonAddress> list)
         {
             var rcount = list.Count;
             if (parameter == null || rcount == 0 || parameter.WebId != 30)
@@ -213,6 +209,19 @@ namespace component
             _ = repoSvc.UpdateRowCount(uniqueId, rcount);
         }
 
+        private void UpdateStatus(string id, int messageId = 0, int statusId = 0)
+        {
+            try
+            {
+                var bo = new WorkStatusBo { Id = id, MessageId = messageId, StatusId = statusId };
+                statusSvc.Update(bo);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+        }
+        [ExcludeFromCodeCoverage]
         private static T? TryConvert<T>(string? data)
         {
             try
