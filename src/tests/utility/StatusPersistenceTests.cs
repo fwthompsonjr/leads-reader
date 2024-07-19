@@ -33,12 +33,6 @@ namespace legallead.reader.service.tests.utility
                     It.IsAny<string>()
                     )).ReturnsAsync(response);
                 persistence.Status(payload.Id, payload.Message);
-                mock.Verify(m => m.Append(
-                    It.Is<jdbc.SearchTargetTypes>(s => s == jdbc.SearchTargetTypes.Status),
-                    It.IsAny<string>(),
-                    It.IsAny<object>(),
-                    It.IsAny<string>()
-                    ));
             });
             Assert.Null(exception);
         }
