@@ -8,6 +8,7 @@ on:
       - "!releases"
     paths:
       - "src/worker/**"
+      - "src/tests/**"
 
 env:
   SOLUTION_NAME: ${{ github.workspace }}\src\legallead.reader.sln
