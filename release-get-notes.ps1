@@ -55,6 +55,5 @@ $version = getVersion -source $versionFile
 $versionNotes = getVersionNotes -source $versionNoteFile -nbr $version
 $found = getChanges -arr $versionNotes
 try {
-echo "RELEASE_CHANGES=$found" >> $env:GITHUB_ENV
+    echo "RELEASE_CHANGES=$found" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 } catch {}
-Write-Output $found;
