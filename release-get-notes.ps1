@@ -44,7 +44,7 @@ function getChanges($arr)
         $tx = [string]::Concat( ($lineid++).ToString(), ". ", $n, "   ");
         $notes += $tx
     }
-    $response = [string]::Join( [Environment]::NewLine, $notes );
+    $response = [string]::Join( ';', $notes );
     return $response;
 }
 
