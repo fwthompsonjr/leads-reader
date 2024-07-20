@@ -42,6 +42,11 @@ jobs:
         run: |
             & ./util/x-pipeline-reader-release-title.ps1
 
+      - name: Calculate Release Notes
+        shell: pwsh
+        run: |
+            & ./release-get-notes.ps1
+
       - name: Update README
         shell: pwsh
         run: |
@@ -72,9 +77,7 @@ jobs:
           release_name: ${{format('Release - {0}', env.BUILD_VERSION)}}
           draft: false
           prerelease: false
-          body: |
-            Changes in this release
-            - Update application
+          body: ${{ env.RELEASE_CHANGES }}
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1

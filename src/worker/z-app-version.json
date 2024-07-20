@@ -1,5 +1,15 @@
 [
   {
+    "id": "3.2.7",
+    "description": "Execute integration test for Denton county.",
+    "date": "2024-07-20"
+  },
+  {
+    "id": "3.2.6",
+    "description": "Configure timer defaults per service read iterations.",
+    "date": "2024-07-20"
+  },
+  {
     "id": "3.2.5",
     "description": "Fetch records preventing concurrent processing.",
     "date": "2024-07-19"

@@ -1,6 +1,9 @@
 
       legallead.reader.service
       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+      : 3.2.7 - 2024-07-20 - Execute integration test for Denton county.
+      : 3.2.6 - 2024-07-20 - Configure timer defaults per service read iterations.
+      : 3.2.5 - 2024-07-19 - Fetch records preventing concurrent processing.
       : 3.2.4 - 2024-07-06 - Added new county search processes.
       : 3.2.3 - 2024-06-29 - Packaging dotnet runtime.
       : 3.2.2 - 2024-06-24 - Adding process to expose queue status.
