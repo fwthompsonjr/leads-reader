@@ -22,8 +22,8 @@ namespace legallead.reader.service.utility
             var setting = new BackgroundServiceSettings
             {
                 Enabled = configuration?.GetValue<bool>("BackgroundServices:Enabled") ?? true,
-                Delay = configuration?.GetValue<int>("BackgroundServices:Delay") ?? 45,
-                Interval = configuration?.GetValue<int>("BackgroundServices:Interval") ?? 10
+                Delay = configuration?.GetValue<int>("BackgroundServices:Delay") ?? 15,
+                Interval = configuration?.GetValue<int>("BackgroundServices:Interval") ?? 2
             };
             services.AddSingleton<IBackgroundServiceSettings>(x => setting);
             services.AddSingleton<IDapperCommand, DapperExecutor>();
