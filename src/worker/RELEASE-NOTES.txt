@@ -1,6 +1,7 @@
 
       legallead.reader.service
       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+      : 3.2.8 - 2024-07-23 - Execute integration test for Collin county.
       : 3.2.7 - 2024-07-20 - Execute integration test for Denton county.
       : 3.2.6 - 2024-07-20 - Configure timer defaults per service read iterations.
       : 3.2.5 - 2024-07-19 - Fetch records preventing concurrent processing.
