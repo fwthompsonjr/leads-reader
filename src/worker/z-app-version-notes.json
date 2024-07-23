@@ -1,5 +1,17 @@
 [
   {
+    "id": "3.2.8",
+    "notes": [
+      "API: create search Collin, 07-15-2024 to 07-16-2024",
+      "Service: open listener to process record",
+      "Pass: service find record to process",
+      "Pass: search is reading records from search",
+      "Pass: search completed successfully.",
+      "Pass: search data is available in excel.",
+      "Pass: search extract is formatted correctly."
+    ]
+  },
+  {
     "id": "3.2.7",
     "notes": [
       "UI: create search Denton, 07-08-2024 to 07-09-2024",

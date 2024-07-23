@@ -1,5 +1,10 @@
 [
   {
+    "id": "3.2.8",
+    "description": "Execute integration test for Collin county.",
+    "date": "2024-07-23"
+  },
+  {
     "id": "3.2.7",
     "description": "Execute integration test for Denton county.",
     "date": "2024-07-20"
