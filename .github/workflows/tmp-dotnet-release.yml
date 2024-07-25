@@ -58,7 +58,7 @@ jobs:
       steps:
       - uses: actions/checkout@v4
 
-      - name: Set Project Name
+      - name: Set Project Title
         shell: bash
         run: |
             echo "PROJECT_TITLE=${{format('legallead.reader.{0}', matrix.version )}}" >> $GITHUB_ENV
