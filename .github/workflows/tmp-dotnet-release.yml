@@ -61,7 +61,7 @@ jobs:
       - name: Set Project Name
         shell: bash
         run: |
-            echo "PROJECT_TITLE=${{format('legallead.reader.{0}-{1}.zip', matrix.version, env.BUILD_VERSION )}}" >> $GITHUB_ENV
+            echo "PROJECT_TITLE=${{format('legallead.reader.{0}', matrix.version )}}" >> $GITHUB_ENV
 
 
       - name: Set ZipFile Name
