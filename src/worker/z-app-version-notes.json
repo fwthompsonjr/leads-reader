@@ -1,5 +1,17 @@
 [
   {
+    "id": "3.2.9",
+    "notes": [
+      "API: create search Harris",
+      "Service: open listener to process record",
+      "Test: service find record to process",
+      "Test: search is reading records from search",
+      "Test: search completed successfully.",
+      "Test: search data is available in excel.",
+      "Test: search extract is formatted correctly."
+    ]
+  },
+  {
     "id": "3.2.8",
     "notes": [
       "API: create search Collin, 07-15-2024 to 07-16-2024",

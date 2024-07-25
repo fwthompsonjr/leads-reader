@@ -37,7 +37,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <!-- Note: Collin Search Behavior update needed by pulling latest core projects -->
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="legallead.jdbc" Version="3.2.*" />
     <PackageReference Include="legallead.json.db" Version="3.2.*" />
