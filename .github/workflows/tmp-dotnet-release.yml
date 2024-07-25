@@ -28,7 +28,7 @@ jobs:
         shell: bash
         run: |
             echo "BUILD_VERSION=${{format('{0}.{1}', vars.LEGALLEAD_READER_PREFIX, github.run_number)}}" >> $GITHUB_ENV
-            echo "build_version_number=${{format('{0}.{1}', vars.LEGALLEAD_READER_PREFIX, github.run_number)}}" >> GITHUB_OUTPUT
+            echo "build_version_number=${{format('{0}.{1}', vars.LEGALLEAD_READER_PREFIX, github.run_number)}}" >> $GITHUB_OUTPUT
 
       - name: Generate Release Notes
         shell: pwsh
@@ -77,14 +77,17 @@ jobs:
 
       - run: dotnet restore ${{ env.SOLUTION_NAME }}
         id: dotnet-restore
+        if: false
         name: DotNet Restore
 
       - run: dotnet publish ${{ env.PROJECT_NAME }} --no-restore -c Release -o ${{ env.PUBLISH_DIR }}
         id: dotnet-publish
+        if: false
         name: DotNet Publish
 
       - name: Zip Content
         shell: pwsh
+        if: false
         run: |
             $sourcePath = [string]::Concat($Env:PUBLISH_DIR, "\*")
             $destination = $Env:ASSET_FILE
@@ -92,6 +95,7 @@ jobs:
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
+        if: false
         id: upload_release_asset
         env:
           GITHUB_TOKEN: ${{ secrets.LEGALLEAD_INSTALLATION_KEY }}
