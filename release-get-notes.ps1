@@ -1,9 +1,10 @@
 <#
+.\release-get-notes.ps1
 	steps:
 	1. get latest version number from release default = param version
 	2. get notes
 	3. return notes or default
-C:\_g\leads-reader\src\worker\z-app-version.json
+
 #>
 $changes = @( "## Changes in this release   " );
 $defaultChanges = @( "Application update");
@@ -54,6 +55,12 @@ $versionNoteFile = [System.IO.Path]::Combine( $workfolder, "src/worker/z-app-ver
 $version = getVersion -source $versionFile
 $versionNotes = getVersionNotes -source $versionNoteFile -nbr $version
 $found = getChanges -arr $versionNotes
+$mdFile = [System.IO.Path]::Combine( $workfolder, "CHANGELOG.md" );
+
+if ( [System.IO.File]::Exists( $mdFile )) { [System.IO.File]::Delete( $mdFile ); }
+$mdtext = [string]::Join( [Environment]::NewLine, $found.Split(';') )
+[System.IO.File]::WriteAllText( $mdFile, $mdtext );
+
 try {
     echo "RELEASE_CHANGES=$found" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 } catch {}
