@@ -4,11 +4,11 @@
     "notes": [
       "API: create search Harris",
       "Service: open listener to process record",
-      "Test: service find record to process",
-      "Test: search is reading records from search",
-      "Test: search completed successfully.",
-      "Test: search data is available in excel.",
-      "Test: search extract is formatted correctly."
+      "Pass: service find record to process",
+      "Pass: search is reading records from search",
+      "Pass: search completed successfully.",
+      "Pass: search data is available in excel.",
+      "Pass: search extract is formatted correctly."
     ]
   },
   {

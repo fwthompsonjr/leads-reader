@@ -37,6 +37,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+	 <!-- package update needed for harris civil -->
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="legallead.jdbc" Version="3.2.*" />
     <PackageReference Include="legallead.json.db" Version="3.2.*" />
