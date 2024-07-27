@@ -112,7 +112,7 @@ namespace legallead.reader.service.utility
                 if (mapped == null || !mapped.IsServer) return filter;
                 return new QueueNonFilter();
             });
-            services.AddSingleton<IWorkingIndicator, WorkingIndicator>();
+            services.AddSingleton(GetIndicator);
 
             services.AddSingleton<ISearchGenerationHelper>(x =>
             {
@@ -164,6 +164,13 @@ namespace legallead.reader.service.utility
             {
                 return default;
             }
+        }
+        [ExcludeFromCodeCoverage]
+        private static IWorkingIndicator GetIndicator(IServiceProvider s)
+        {
+            var ops = s.GetRequiredService<OperationSetting>();
+            if (ops.IsServer) return new WorkingServiceIndicator();
+            return new WorkingIndicator();
         }
     }
 }

@@ -1,5 +1,13 @@
 [
   {
+    "id": "3.2.10",
+    "notes": [
+      "Service: display console when running in server mode",
+      "Test: service window is visible during execution",
+      "Test: service does not shutdown on timed event"
+    ]
+  },
+  {
     "id": "3.2.9",
     "notes": [
       "API: create search Harris",
