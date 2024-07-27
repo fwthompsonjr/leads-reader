@@ -96,6 +96,13 @@ namespace legallead.reader.service.utility
                 var mapped = TryJsConvert<OperationSetting>(content) ?? fallback;
                 return mapped;
             });
+            services.AddSingleton<IMainWindowService>(s =>
+            {
+                var ops = s.GetRequiredService<OperationSetting>();
+                if (ops.IsServer) return new MainWindowVisibleService();
+                var config = s.GetService<IConfiguration>();
+                return new MainWindowService(config);
+            });
             services.AddSingleton<IIndexReader, IndexReader>();
             services.AddSingleton<IQueueFilter>(s =>
             {
@@ -119,12 +126,11 @@ namespace legallead.reader.service.utility
 
             services.AddSingleton(s =>
             {
-                var config = s.GetService<IConfiguration>();
                 var logger = s.GetRequiredService<ILoggingRepository>();
                 var search = s.GetRequiredService<ISearchQueueRepository>();
                 var component = s.GetRequiredService<IBgComponentRepository>();
                 var settings = s.GetRequiredService<IBackgroundServiceSettings>();
-                var mn = new MainWindowService(config);
+                var mn = s.GetRequiredService<IMainWindowService>();
                 var qu = s.GetRequiredService<IQueueFilter>();
                 var indc = s.GetRequiredService<IWorkingIndicator>();
                 var helper = s.GetRequiredService<ISearchGenerationHelper>();
