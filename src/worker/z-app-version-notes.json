@@ -3,8 +3,8 @@
     "id": "3.2.10",
     "notes": [
       "Service: display console when running in server mode",
-      "Test: service window is visible during execution",
-      "Test: service does not shutdown on timed event"
+      "Pass: service window is visible during execution",
+      "Pass: service does not shutdown on timed event"
     ]
   },
   {
