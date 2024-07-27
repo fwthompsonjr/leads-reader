@@ -59,7 +59,7 @@ namespace legallead.reader.service.services
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability",
+        [SuppressMessage("Interoperability",
             "SYSLIB1054:Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time",
             Justification = "<Pending>")]
         private static extern bool IsWindowVisible(IntPtr hWnd);

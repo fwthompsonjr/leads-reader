@@ -13,6 +13,7 @@ env:
   PROJECT_TITLE: "legallead.reader.service"
   PUBLISH_DIR: ${{ github.workspace }}\publish
   ASSET_FILE: ${{ github.workspace }}\reader.zip
+  CHANGELOG_FILE: ${{ github.workspace }}\CHANGELOG.md
   NET_VERSION: "8.0.x"
   NUGET_CERT_REVOCATION_MODE: offline
 

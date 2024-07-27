@@ -1,5 +1,10 @@
 [
   {
+    "id": "3.2.10",
+    "description": "Provide console when running as service.",
+    "date": "2024-07-27"
+  },
+  {
     "id": "3.2.9",
     "description": "Execute integration test for Harris county.",
     "date": "2024-07-26"
