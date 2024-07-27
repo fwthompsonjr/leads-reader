@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-component-906e3ed5-0a9e-42a3-a3be-cd6406812100</UserSecretsId>
-    <AssemblyVersion>3.2.8</AssemblyVersion>
-    <FileVersion>3.2.8</FileVersion>
+    <AssemblyVersion>3.2.10</AssemblyVersion>
+    <FileVersion>3.2.10</FileVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Description>Windows process to perform local user based searches for legal leads components.</Description>
@@ -37,7 +37,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-	 <!-- package update needed for harris civil -->
+    <!-- package update needed for harris civil -->
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="legallead.jdbc" Version="3.2.*" />
     <PackageReference Include="legallead.json.db" Version="3.2.*" />

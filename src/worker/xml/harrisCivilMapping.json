@@ -46,7 +46,7 @@
       }
     },
     {
-      "actionName": "click",
+      "actionName": "harris-civil-search-click",
       "displayName": "login-submit",
       "locator": {
         "find": "css",
