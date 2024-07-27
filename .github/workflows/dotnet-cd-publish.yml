@@ -17,22 +17,68 @@ env:
   NUGET_CERT_REVOCATION_MODE: offline
 
 jobs:
-  build:
-    if: contains(github.event.pull_request.labels.*.name, 'approved')
-    runs-on: windows-latest
-    steps:
+    draft_release:
+      if: contains(github.event.pull_request.labels.*.name, 'approved')
+      runs-on: windows-latest
+      outputs:
+        release_upload_url: ${{ steps.create_release.outputs.upload_url }}
+        build_version_number: ${{ steps.calc_release_version.outputs.build_version_number }}
+      steps:
       - uses: actions/checkout@v4
       - name: Set Build Version
+        id: calc_release_version
         shell: bash
         run: |
             echo "BUILD_VERSION=${{format('{0}.{1}', vars.LEGALLEAD_READER_PREFIX, github.run_number)}}" >> $GITHUB_ENV
+            echo "build_version_number=${{format('{0}.{1}', vars.LEGALLEAD_READER_PREFIX, github.run_number)}}" >> $GITHUB_OUTPUT
+
+      - name: Generate Release Notes
+        shell: pwsh
+        run: |
+            & ./release-get-notes.ps1
+
+      - name: Create Release Draft
+        uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.LEGALLEAD_INSTALLATION_KEY }}
+        with:
+          tag_name: ${{format('v{0}', env.BUILD_VERSION)}}
+          release_name: ${{format('Release - {0}', env.BUILD_VERSION)}}
+          draft: false
+          prerelease: false
+          body_path: ${{ env.CHANGELOG_FILE }}
+    build_artifact:
+      needs: [draft_release]
+      runs-on: windows-latest
+      strategy:
+        matrix:
+          version: [server, user]
+      env:
+        BUILD_VERSION: ${{ needs.draft_release.outputs.build_version_number }}
+        RELEASE_UPLOAD_URL: ${{ needs.draft_release.outputs.release_upload_url }}
+      steps:
+      - uses: actions/checkout@v4
+
+      - name: Set Project Title
+        shell: bash
+        run: |
+            echo "PROJECT_TITLE=${{format('legallead.reader.{0}', matrix.version )}}" >> $GITHUB_ENV
+
 
       - name: Set ZipFile Name
         shell: bash
         run: |
             echo "ZIPFILE_NAME=${{format('{0}-{1}.zip', env.PROJECT_TITLE, env.BUILD_VERSION )}}" >> $GITHUB_ENV
 
-      - name: Configure Component
+      - name: Configure Component Server
+        if: ${{ matrix.version == 'server' }}
+        shell: pwsh
+        run: |
+            & ./configure-component.ps1 -isServer $true -applyUpdate $true
+
+      - name: Configure Component User
+        if: ${{ matrix.version == 'user' }}
         shell: pwsh
         run: |
             & ./configure-component.ps1 -applyUpdate $true
@@ -41,11 +87,6 @@ jobs:
         shell: pwsh
         run: |
             & ./util/x-pipeline-reader-release-title.ps1
-
-      - name: Calculate Release Notes
-        shell: pwsh
-        run: |
-            & ./release-get-notes.ps1
 
       - name: Update README
         shell: pwsh
@@ -56,7 +97,7 @@ jobs:
         id: dotnet-restore
         name: DotNet Restore
 
-      - run: dotnet publish ${{ env.PROJECT_NAME }} --no-restore -c Release -o ${{ env.PUBLISH_DIR }} --sc true
+      - run: dotnet publish ${{ env.PROJECT_NAME }} --no-restore -c Release -o ${{ env.PUBLISH_DIR }}
         id: dotnet-publish
         name: DotNet Publish
 
@@ -67,108 +108,13 @@ jobs:
             $destination = $Env:ASSET_FILE
             Compress-Archive -Path $sourcePath -DestinationPath $destination
 
-      - name: Create Release
-        uses: actions/create-release@v1
-        id: create_release
-        env:
-          GITHUB_TOKEN: ${{ secrets.LEGALLEAD_INSTALLATION_KEY }}
-        with:
-          tag_name: ${{format('v{0}', env.BUILD_VERSION)}}
-          release_name: ${{format('Release - {0}', env.BUILD_VERSION)}}
-          draft: false
-          prerelease: false
-          body: ${{ env.RELEASE_CHANGES }}
-
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         id: upload_release_asset
         env:
           GITHUB_TOKEN: ${{ secrets.LEGALLEAD_INSTALLATION_KEY }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ env.RELEASE_UPLOAD_URL }}
           asset_path: ${{ env.ASSET_FILE }}
           asset_name: ${{ env.ZIPFILE_NAME }}
           asset_content_type: application/zip
-  build_artifact:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set Build Version
-        shell: bash
-        run: |
-            echo "BUILD_VERSION=${{format('{0}.{1}', vars.LEGALLEAD_READER_PREFIX, github.run_number)}}" >> $GITHUB_ENV
-
-      - name: Set ZipFile Name
-        shell: bash
-        run: |
-            echo "ZIPFILE_NAME=${{format('{0}-{1}.zip', env.PROJECT_TITLE, env.BUILD_VERSION )}}" >> $GITHUB_ENV
-
-      - name: Configure Component
-        shell: pwsh
-        run: |
-            & ./configure-component.ps1 -applyUpdate $true
-
-      - name: Calculate Release Title
-        shell: pwsh
-        run: |
-            & ./util/x-pipeline-reader-release-title.ps1
-
-      - name: Update README
-        shell: pwsh
-        run: |
-            & ./util/x-pipeline-update-release-notes.ps1 -version "${{ env.BUILD_VERSION }}"
-
-      - run: dotnet restore ${{ env.SOLUTION_NAME }}
-        id: dotnet-restore
-        name: DotNet Restore
-
-      - run: dotnet publish ${{ env.PROJECT_NAME }} --no-restore -c Release -o ${{ env.PUBLISH_DIR }}
-        id: dotnet-publish
-        name: DotNet Publish
-        
-      - uses: actions/upload-artifact@v4
-        with:
-          name: reader
-          path: ${{ github.workspace }}/publish/**
-  build_artifact_server:
-    runs-on: windows-latest
-    if: contains(github.event.pull_request.labels.*.name, 'approved')
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set Build Version
-        shell: bash
-        run: |
-            echo "BUILD_VERSION=${{format('{0}.{1}', vars.LEGALLEAD_READER_PREFIX, github.run_number)}}" >> $GITHUB_ENV
-
-      - name: Set ZipFile Name
-        shell: bash
-        run: |
-            echo "ZIPFILE_NAME=${{format('{0}-{1}.zip', env.PROJECT_TITLE, env.BUILD_VERSION )}}" >> $GITHUB_ENV
-
-      - name: Configure Component
-        shell: pwsh
-        run: |
-            & ./configure-component.ps1 -isServer $true -applyUpdate $true
-
-      - name: Calculate Release Title
-        shell: pwsh
-        run: |
-            & ./util/x-pipeline-reader-release-title.ps1
-
-      - name: Update README
-        shell: pwsh
-        run: |
-            & ./util/x-pipeline-update-release-notes.ps1 -version "${{ env.BUILD_VERSION }}"
-
-      - run: dotnet restore ${{ env.SOLUTION_NAME }}
-        id: dotnet-restore
-        name: DotNet Restore
-
-      - run: dotnet publish ${{ env.PROJECT_NAME }} --no-restore -c Release -o ${{ env.PUBLISH_DIR }}
-        id: dotnet-publish
-        name: DotNet Publish
-        
-      - uses: actions/upload-artifact@v4
-        with:
-          name: server
-          path: ${{ github.workspace }}/publish/**
