@@ -96,22 +96,9 @@ namespace legallead.reader.service.utility
                 var mapped = TryJsConvert<OperationSetting>(content) ?? fallback;
                 return mapped;
             });
-            services.AddSingleton<IMainWindowService>(s =>
-            {
-                var ops = s.GetRequiredService<OperationSetting>();
-                if (ops.IsServer) return new MainWindowVisibleService();
-                var config = s.GetService<IConfiguration>();
-                return new MainWindowService(config);
-            });
+            services.AddSingleton<IMainWindowService, MainWindowVisibleService>();
             services.AddSingleton<IIndexReader, IndexReader>();
-            services.AddSingleton<IQueueFilter>(s =>
-            {
-                var reader = s.GetRequiredService<IIndexReader>();
-                var filter = new QueueFilter(reader);
-                var mapped = s.GetRequiredService<OperationSetting>();
-                if (mapped == null || !mapped.IsServer) return filter;
-                return new QueueNonFilter();
-            });
+            services.AddSingleton<IQueueFilter, QueueNonFilter>();
             services.AddSingleton(GetIndicator);
 
             services.AddSingleton<ISearchGenerationHelper>(x =>
